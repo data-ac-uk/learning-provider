@@ -1,0 +1,105 @@
+#!/usr/bin/perl 
+
+use FindBin;
+use Text::CSV;
+use Data::Dumper;
+#use lib "$FindBin::Bin/../perl_lib";
+
+use strict;
+use warnings;
+
+my $var_path = "$FindBin::Bin/../var";
+my $source_data_path = "$FindBin::Bin/../source-data";
+my $var_path = "$FindBin::Bin/../var/data";
+
+my $consortia_data = load_csv_file( "$var_path/downloads/consortia.csv", "ID" );
+my $consortia_map_data = load_csv_file( "$var_path/downloads/consortia-map.csv","UKPRN" );
+my $ukprn_data = load_csv_file( "$source_data_path/ukprn.csv", "UKPRN" );
+
+# outputs 
+
+# learning-provider csv raw
+# learning-provider csv cooked
+# learning-provider ttl raw
+# learning-provider ttl cooked
+# consortia csv
+# consortia ttl
+# per university ttl
+# per university html?
+# per consortia html?
+# dbpedia linkset ttl
+
+
+
+exit;
+
+sub load_csv_file
+{
+	my( $filename, $key_field ) = @_;
+
+        my $data;
+        my $csv = Text::CSV->new ( { binary => 1 } )  # should set binary attribute.
+                        or die "Cannot use CSV: ".Text::CSV->error_diag ();
+
+        open my $fh, "<:encoding(utf8)", "$filename" or die "$filename: $!";
+        my $fields = $csv->getline( $fh );
+	my $number_of_fields = scalar @$fields;
+	print Dumper( $fields );
+        while ( my $row = $csv->getline( $fh ) ) {
+		my $row_data = {};
+		for my $i (0..($number_of_fields-1) )
+		{
+			$row_data->{$fields->[$i]} = $row->[$i];
+		}
+		$data->{ $row_data->{$key_field} } = $row_data;
+	}
+        $csv->eof or $csv->error_diag();
+        close $fh;
+
+	return $data;
+}
+
+__DATA__
+
+UKPRN
+    {
+            'BUILDING_NAME_NUMBER' => '',
+            'POSTCODE' => 'CM1 3RR',
+            'LOCALITY' => 'Writtle',
+            'ALIAS' => '',
+            'PRIMARY_CONTACT_POSTCODE' => 'CM1 3RR',
+            'PROVIDER_NAME' => 'WRITTLE COLLEGE',
+            'WEBSITE_ADDRESS' => 'www.writtle.ac.uk',
+            'UKPRN' => '10007657',
+            'FLAT_NAME_NUMBER' => '',
+            'TOWN' => 'Chelmsford',
+            'STREET_NAME' => 'Lordship Road'
+          },
+
+Consortia
+          {
+            'Homepage' => 'http://www.millionplus.ac.uk/',
+            'ID' => 'MillionPlus',
+            'Wikipedia' => 'http://en.wikipedia.org/wiki/Million%2B',
+            'Members List' => 'http://www.millionplus.ac.uk/who-we-are/our-affiliates/',
+            'Group Name' => 'Million+'
+          },
+
+Consortia map
+          {
+            'UKPRN' => '10007657',
+            'PROVIDER_NAME' => 'WRITTLE COLLEGE', # cosmetic, ignore
+            'Wikipedia' => 'http://en.wikipedia.org/wiki/Writtle_College',
+
+
+Million%2B
+Russell_Group
+NCUK
+University_Alliance
+1994_Group
+White_Rose_University_Consortium
+N8_Research_Partnership
+          },
+
+
+

@@ -1,0 +1,856 @@
+
+/* 
+==================================================================================================
+
+	Theme Name: Atelier Styles
+	Author: Atelier Studios
+	Author URI: http://www.atelier-studios.com/
+	Date: December 2012
+
+==================================================================================================
+*/
+
+
+/*==================================================================================================
+
+	1. GLOBAL RESETS
+	
+ ====================================================================================================*/
+ 
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td { margin:0; padding:0; border:0; font-weight:inherit; font-style:inherit; font-size:100%; font-family:inherit; vertical-align:baseline; } html, body {height: 100%; width: 100%; } table { border-collapse:separate; border-spacing:0; } /* Prevents sub and sup affecting line-height in all browsers - gist.github.com/413930 */ sub, sup {font-size:75%;line-height:0;position:relative;vertical-align:baseline;} sup {top:-.5em;} sub {bottom:-.25em;} caption, th, td { text-align:left; font-weight:normal; } table, td, th { vertical-align: top; } blockquote:before, blockquote:after, q:before, q:after { content:""; } blockquote, q { quotes:"" ""; } a img { border:none; } /* || Reset all margins/padding => */ * { margin:0; padding:0; } /* || Gets rid of outlined links in Firefox => */ a {outline: none;} a:hover,a:active { outline:0; } /* || No boders on images and displays them as block level elements in IE6 => */img {border:0;	padding: 0;	margin: 0;} br {clear:both; line-height:10px;	} div#content br {clear: none;	line-height:10px;}	ul { margin: 0; padding: 0;	list-style-type: none; } ul li { margin: 0;	padding: 0;	list-style: none; }	/* || HTML 5 Resets taken from normalize.css 17-01-2012- http://github.com/necolas/normalize.css => */ article, aside, details, figcaption, figure, footer, header, hgroup, nav, section{display:block;}audio, canvas, video{display:inline;zoom:1;}audio:not([controls]),[hidden]{display:none;} /* || Form Resets taken from normalize.css 17-01-2012- http://github.com/necolas/normalize.css => */ legend{border:0;white-space:normal;margin-left:-7px;padding:0;} button,input,select,textarea{font-size:100%;vertical-align:middle;margin:0;} button,input{line-height:normal;} button,input[type=button],input[type=reset],input[type=submit]{cursor:pointer;-webkit-appearance:button;overflow:visible;} input[type=checkbox],input[type=radio]{box-sizing:border-box;height:13px;width:13px;padding:0;} input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box;} button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;} textarea{overflow:auto;vertical-align:top;} input[type=search]::-webkit-search-decoration,input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;} form, input, textarea, label, select, fieldset { margin: 0; padding: 0; } input { border: none; border: 0px solid #FFFFFF; vertical-align: top; overflow: visible; }
+
+
+/*html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td { border: 1px solid green; }*/
+
+
+/*==================================================================================================
+
+	2. TYPOGRAPHY
+	
+ ====================================================================================================*/
+ 
+body, button, input, select, textarea {
+	font-size: 12px;
+	line-height: 18px;
+	text-align: left;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #666;
+	}
+
+p {
+	padding: 0 0 15px 0;
+	text-align: left;
+	}
+	
+	p.small, .breadcrumb {
+	font-size: 11px;
+	line-height: 14px;
+	}
+	
+	.text_slide p {
+	color: #135c7b;	
+	}
+	
+	footer {
+	font-size: 0.9em;
+	line-height: 14px;
+	margin: 0;
+	color: #a1a1a1;
+	}
+	
+	body.front footer {
+	color: #8fbadf
+	}
+	
+	#skip-link { position: absolute; top: -200px; left: 0px; width: 10px; height: 10px; z-index: 100; }
+	
+	body.front article.node-promoted p { color: #FFF; }
+
+
+	
+/*--------------- HEADINGS --------------- */
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: Helvetica, Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	color: #193965;
+	font-weight: bold;
+	}
+	
+h1 {
+	padding: 0 0 15px 0;
+	font-size: 28px;
+	line-height: 32px;
+	margin: 0 0 20px 0;
+	border-bottom: 3px solid #193964;	
+	}
+	
+	h1 strong {
+	color: #193965;
+	}
+	
+	
+h2 {
+	padding: 0 0 15px 0;
+	font-size: 22px;
+	line-height: 26px;
+	font-weight: normal;
+	}
+	
+	
+h3 {
+	padding: 0 0 15px 0;
+	font-size: 18px;
+	line-height: 22px;
+	font-weight: normal;
+	}
+	
+h4 {
+	padding: 0 0 15px 0;
+	font-size: 16px;
+	line-height: 18px;
+	font-weight: normal;
+	}
+	
+	.promo_panel h4 {
+	padding: 0;
+	font-size: 14px;
+	font-weight: bold;
+	}
+	
+h5 {
+	padding: 0 0 10px 0;
+	font-size: 14px;
+	line-height: 18px;
+	}
+
+h6 {
+	padding: 0 0 15px 0;
+	font-size: 12px;
+	line-height: 16px;
+	}
+
+/*--------------- OTHER TEXT STYLES --------------- */	
+			
+strong {
+	font-weight:bold;
+	color: #333;
+	}
+	
+em {
+	font-style:italic;
+	display:inline;
+	}
+
+blockquote {
+	margin: 0;
+	padding: 0;
+	border: none;
+	}
+
+	blockquote cite {
+	margin: 5px 0 0;
+	display: block;
+	}
+	
+	div#content blockquote {
+	float: left;
+	color: #333333;
+	margin:0;
+	padding:24px;
+	text-align:justify;	
+	}
+
+hr {
+	border: 0;
+	color: #cfd0d4;
+	background-color: #cfd0d4;
+	height: 1px;
+	font-size: 1px;
+	line-height: 1px;
+	margin: 6px 0 10px 0 ;
+	padding: 0;
+	}
+
+/*==================================================================================================
+
+     3. LINK STYLES
+	 
+================================================================================================== */	
+	
+a { color: #417CA5;	text-decoration: none; }
+
+	a:hover { color: #417CA5; text-decoration: underline; }
+	
+div.views-field-title a {
+	display: block;
+	color: #163966;
+	font-size: 14px;
+	font-weight: bold;
+	text-decoration: none;
+	padding: 3px 0 8px 0;
+	}
+	
+	div.views-field-title a:hover {
+	color: #163966;
+	text-decoration: underline;
+	}
+	
+div#block-views-news-listing-box-new-block a { color: #fff; }
+	
+	div#block-views-news-listing-box-new-block a:hover { color: #fff; }	
+	
+footer a { color: #999999; text-decoration: none; }
+
+	footer a:hover { color: #417CA5; text-decoration: underline; }
+	
+
+body.front footer a { color: #8fbadf; text-decoration: none; }
+
+	body.front footer a:hover { color: #8fbadf; text-decoration: underline; }
+
+
+header a { color: #2f2f2f;	text-decoration: none; }
+
+	header a:hover { color: #2f2f2f; text-decoration: underline; }
+
+
+
+/*==================================================================================================
+
+	4. MAIN STRUCTURE
+	
+==================================================================================================*/	
+
+body { }
+
+header { 
+	height: 70px;
+	border-bottom: 1px solid #CCC;
+	}
+
+
+
+/*==================================================================================================
+
+	5. THE FOUNDATION GRID - Copied from Foundation - Jan 2012 - v2.1.4 http://foundation.zurb.com
+	
+==================================================================================================*/	
+
+
+/* ----- ADD BY ATELIER ENDS------ */
+
+	.row { width: 100%; max-width: 990px; margin: 0 auto; clear: both; position: relative; }
+	.row .row { min-width: 0; }
+
+/*	--------------------------------------------------
+	Columns
+	-------------------------------------------------- */
+
+	.three 	{ width: 210px; float: right; }
+	.nine 	{ width: 700px; float: left; }
+
+/*	--------------------------------------------------
+	ATELIER POSITIONING - MARGIN PADDING ETC
+	-------------------------------------------------- */
+
+/*---------- POSITIONING ---------**/
+
+	.float_right { float:right;	}
+	.float_left { float:left; }
+	.clear { clear:both; }
+	.centre { margin: 0 auto; max-width: 990px; }
+
+/*---------- POSITIONING ---------**/
+
+	.height_70 { height: 70px; }
+	.height_80 { height: 80px; }
+	.height_100 { height: 100px; }
+	.height_120 { height: 120px; }
+	.height_140 { height: 140px; }
+
+/*---------- MARGINS ---------**/
+
+	.margin_top_10_minus { margin-top: -10px; }
+	.margin_top_10 { margin-top: 10px; }
+	.margin_top_20 { margin-top: 20px; }
+	.margin_top_30 { margin-top: 30px; }
+	.margin_top_40 { margin-top: 40px; }
+	.margin_top_50 { margin-top: 50px; }
+
+	.margin_bottom_10 { margin-bottom: 10px; }
+	.margin_bottom_20 { margin-bottom: 20px; }
+	.margin_bottom_30 { margin-bottom: 30px; }
+	
+	.margin_left_10	{ margin-left:10px;}
+	.margin_left_15	{ margin-left:15px;}
+	.margin_left_20  { margin-left: 20px; }
+	
+	.margin_right_20 { margin-right: 20px; }
+	.margin_right_10 { margin-right: 10px; }
+
+/*---------- PADDING ---------**/
+
+	.padding_none { padding: 0 0 0 0; }
+	
+	.padding_top_5 { padding-top: 5px; }
+	.padding_top_10 { padding-top: 10px; }
+	.padding_top_15 { padding-top: 15px; }
+	.padding_top_20 { padding-top: 20px; }
+	.padding_top_30 { padding-top: 30px; }
+	
+	.padding_bottom_5 { padding-bottom: 5px; }
+	.padding_bottom_10 { padding-bottom: 10px; }
+	.padding_bottom_20 { padding-bottom: 20px; }
+	.padding_bottom_30 { padding-bottom: 30px; }
+
+	.padding_top_15_bottom_15 { padding-top: 15px; padding-bottom: 15px; }
+	
+	.padding_left_10 { padding-left: 10px; }
+	.padding_left_20 { padding-left: 20px; }
+	.padding_left_40 { padding-left: 40px; }
+	
+	.padding_right_10 { padding-right: 10px; }
+	.padding_right_20 { padding-right: 20px; }
+	
+	.padding_left_20_right_20 { padding-right: 20px; padding-left: 20px; }
+
+/*---------- Border ---------**/
+	
+	.border_right_1px { border-right: 1px solid #E7E7E7; }
+	
+	.border_top_1px { border-top: 1px solid #E7E7E7; }
+	
+	.border_bottom_1px { border-bottom: 1px solid #E7E7E7; }
+	
+	.border_bottom_blue_1px { border-bottom: 1px solid #71c6d0; }
+	
+	.border_bottom_blue_2px { border-bottom: 2px solid #71c6d0; }
+	
+	.border_bottom_grey_2px { border-bottom: 2px solid #E7E7E7; }
+		
+	.border_bottom_5px { border-bottom: 5px solid #71c6d0; }
+
+
+/*---------- PANELS ---------**/
+	
+	.border_right_1px { border-right: 1px solid #fff; }
+	
+	.border_top_1px { border-top: 1px solid #CCCCCC; }
+	
+	.border_bottom_1px { border-bottom: 1px solid #CCCCCC; }
+
+
+/*---------- PANELS ---------**/
+
+	
+	div#content .block {
+	float: left;
+	width: 265px;
+	min-height: 265px;
+	margin: 0 30px 30px 0;
+	background: #FFF;
+	padding: 20px 20px 15px 20px;
+	}
+	
+	div#content .block.last,
+	div#content div#block-block-4  {
+	margin: 0 0 30px 0;
+	}
+
+		
+/*==================================================================================================
+
+	INNER ELEMENTS
+	
+==================================================================================================*/		
+	
+div.search_drop_down {
+	background-color:#193965;
+	color:#fff;
+	}
+	
+	a.search_drop_down_link {
+	color:#fff;
+	text-decoration:none;
+	display:block;
+	padding: 10px;
+	font-size: 18px;
+	line-height: 20px;
+	}
+	
+	div.filter_box {
+	background-color:#eef;
+	border-left: solid 2px #999;
+	border-bottom: solid 2px #999;
+	border-right: solid 2px #999;
+	padding: 30px;
+	}
+	
+.match-title {
+	font-size:120%;
+	font-weight: bold;
+	margin-bottom: 0.5em;
+}
+.match {
+	margin-left: 1em;
+	margin-right: 1em;
+	margin-bottom: 1em;
+	padding-bottom: 1em;
+	border-bottom: solid 1px #999;
+}
+.filter-heading {
+	font-weight: bold;
+	font-size: 120%;
+	margin-bottom: 0.5em;
+}
+.contactRow {
+	margin-top: 0.5em;
+	font-size: 80%;
+}
+.contact {
+	background-color: #eef;
+	border: solid 1px #99c;
+	display: inline-block;
+	padding: 3px;
+}	
+	
+		
+	
+/*==================================================================================================
+
+	10. MAIN NAVIGATION - CSS DROP DOWN MENU WITH JQUERY FADE IN EFFECT - ALTERED BY ATELIER - INSPIRED BY - http://www.webinterfacelab.com/snippets/tabbed-navigation
+	
+==================================================================================================*/	
+
+nav#main-menu {
+	width: 800px;
+	height: 30px;
+	position: absolute;
+	z-index: 100;
+	top: 13px;
+	right: 0px;
+	}
+
+/*------ MAIN NAV ITEMS ---------*/
+
+nav#main-menu ul {
+	float: right;
+	display: block;
+	}
+
+nav#main-menu ul > li {
+	float: right;
+	padding: 0 35px 0 0;
+	}
+	
+	nav#main-menu ul > li > a {
+	display: block;
+	height: 26px;
+	font-size: 14px;
+	padding: 8px 0 0 0;
+	color: #2f2f2f;
+	font-weight: normal;
+	text-decoration: none;
+	outline: none;
+	}
+
+	nav#main-menu ul > li > a:hover,
+	nav#main-menu ul > li.active > a, 
+	nav#main-menu ul > li > a:active, 
+	nav#main-menu ul > li.dropdown:hover > a,
+	nav#main-menu ul > li > a.active-trail {
+	text-decoration: none;
+	color: #2061a2;
+	border-bottom: 3px solid #417CA5;
+	}
+	
+	
+/*------ CASCADING STYLES FOR DROP DOWN LINK STYLES ---------*/
+
+li.dropdown ul {
+	background: #6389aa;
+	}
+	
+li.dropdown li {
+	display: block;
+	overflow: visible;
+	float: left;
+	}
+
+li.dropdown li a {
+	display: block;
+	color: #fff;
+	padding: 10px 20px;
+	float: left;
+	min-width: 140px;
+	border-bottom: 1px solid #adbecc;
+	text-decoration: none;
+	}
+	
+	li.dropdown li a:hover {
+	color: #fff;
+	background: #1a4061;
+	text-decoration: underline;
+	}
+
+
+	
+/*==================================================================================================
+
+	7. LISTS 
+	
+==================================================================================================*/
+
+div#content ul {
+	margin: 0;
+	padding: 0 0 10px 0;
+	list-style-type: none;
+	}
+	
+	div#content ul li {
+	margin: 0;
+	padding: 0 0 7px 20px;
+	background: url(/images/bullet.gif) no-repeat 0 8px;
+	}
+
+aside.sidebars ul.menu {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	text-align: left;
+	font-size: 14px;
+	}
+	
+	aside.sidebars ul.menu li {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	}
+	
+	aside.sidebars ul.menu li a {
+	padding: 9px 0 10px 0;
+	border-bottom: 1px solid #CCC;
+	display: block;
+	}
+	
+		aside.sidebars ul.menu li ul li a {
+		padding: 9px 0 10px 20px;
+		}
+		
+	aside.sidebars ul.menu li.active a {
+	font-weight: bold;
+	color: #390742;
+	text-decoration: none;
+	}
+	
+		aside.sidebars ul.menu li.active ul li a {
+		font-weight: normal;
+		color: #417CA5;
+		}
+	
+
+div#content ol {
+	padding: 5px 0 10px 22px;
+	margin: 0;
+	}
+	
+	div#content ol li {
+	margin: 0;
+	padding: 0 0 10px 0;
+	}
+
+/*==================================================================================================
+
+	8. TABLES
+	
+ ====================================================================================================*/
+ 
+div#content table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0 0 20px 0;
+	}
+	
+	div#content table th {
+	padding: 7px 15px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background: #000000;
+	border-right: 1px solid #FFFFFF;
+	}
+	
+	div#content table td {
+	padding: 7px 15px;
+	border-bottom: 1px solid #CCCCCC;
+	}
+
+
+
+/*==================================================================================================
+
+	14. IMAGE REPLACEMENT BUTTONS
+	
+==================================================================================================*/
+
+/*------------- IMAGE REPLACEMENT BUTTON RESETS - ADD ALL BUTTON CLASSES HERE -----------------*/
+
+	a.logo, a.rss {
+	display: block;
+	overflow: hidden;
+	text-indent: -9999px;
+	cursor: pointer;
+	border: none;
+	}
+	
+/*------------- BUTTON RESETS ENDS -----------------*/
+
+	a.logo {
+	width: 155px;
+	height: 42px;
+	position: absolute;
+	z-index: 200;
+	left: 0px;
+	top: 15px;
+	background: url(images/sitewide/logo.jpg) no-repeat 0 0;
+	}
+
+	a.rss {
+	background: url(images/sitewide/rss_icons.jpg) no-repeat 0 0;
+	width: 20px; 
+	height: 20px;
+	float: right;
+	text-align: left;
+	}
+	
+	body.front a.rss {
+	background: url(images/sitewide/rss_icons.jpg) no-repeat -30px 0;
+	}
+	
+/*==================================================================================================
+
+	15. FORMS
+	
+ ====================================================================================================*/
+
+div#main div.form-item {
+	float: left;
+	clear: both;
+	width: 100%;
+	margin-top: 0;
+	margin-bottom: 0;
+	}
+
+/*============ LABEL STYLES ================*/
+
+label {
+	width: 100%;
+	float: left;
+	clear: both;
+	text-align: left;
+	padding: 10px 0 10px 0;	
+	}
+	
+/*============ SELECT STYLES ================*/
+	
+select {
+	padding: 3px;
+	height: 25px;
+	margin: 0 0 8px 0;
+	border: 1px solid #c5c3c4;
+	background-color: #FFFFFF;
+	}				
+
+/*============ FIELDSET STYLES ================*/
+
+fieldset {
+	clear: both;
+	border: none;
+	}		
+
+/*============ TEXT FIELD STYLES ================*/
+
+input.form-text {
+	color: #212121;
+	float: left;
+	width: 350px;
+	padding: 10px;
+	border: 1px solid #c5c3c4;
+	}
+
+/*============ TEXT AREA STYLES ================*/
+
+.form-textarea-wrapper textarea.form-textarea {
+	height: 117px;
+	width: 350px;
+	margin: 0 0 8px 0;
+	padding: 9px 8px 9px 8px;
+	border: 1px solid #c5c3c4;
+	float: left;
+	}
+	
+	textarea:focus { background: #f8f8f8; }
+	
+
+/*============ CHECK BOXES ================*/
+
+span.checkbox_container {
+	float: left;
+	clear: both;
+	}
+	
+	span.checkbox_long { padding: 0 0 8px 265px; }
+	
+	span.checkbox_medium { padding: 0 0 8px 235px; }	
+	
+	span.checkbox_short { padding: 0 0 8px 95px; }	
+	
+	input.checkbox { padding: 5px 10px 0 0; }
+	
+
+/*============ INPUT BUTTON STYLES ================*/
+
+
+input.form-submit {
+	display: block;
+	font-weight: bold;
+	font-size: 13px;
+	line-height: 13px;
+	color: #FFFFFF;
+	padding: 10px 25px;
+	margin: 0 0 0 15px;
+	border: 0;
+	cursor: pointer;
+	float: left;
+ 	background-color: #00447D;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	text-shadow: none;
+	}
+	
+	
+	input.form-submit:hover {
+	display: block;
+	font-weight: bold;
+	font-size: 13px;
+	line-height: 13px;
+	color: #FFFFFF;
+	padding: 10px 25px;
+	border: 0;
+	cursor: pointer;
+ 	background-color: #00447D;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;	
+	}
+	
+
+
+/*==================================================================================================
+
+	9. CSS3 BUTTONS - Copied from Foundation - Jan 2012 - v2.1.4 http://foundation.zurb.com
+	
+==================================================================================================*/
+
+.button {
+
+ 	background-color: #00447D;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;	
+	display: inline-block;
+	text-align: center;
+	padding: 9px 34px 11px;
+	color: #fff;
+	text-decoration: none;
+	font-weight: bold;
+	line-height: 1;
+	position: relative;
+	cursor: pointer;
+	border: none;
+	}
+	
+  	/* Don't use native buttons on iOS */
+	input[type=submit].button { -webkit-appearance: none; }
+	
+
+	/* Sizes ---------- */
+	.small.button 			{ font-size: 11px; padding: 8px 20px 10px; width: auto; }
+	.medium.button 			{ font-size: 12px; width: auto; padding-left: 15px; padding-right: 15px; }
+	.large.button 			{ font-size: 18px; padding: 11px 48px 13px; width: auto; }
+
+	/* Colors ---------- */
+	.blue.button			{ background-color: #3399FF;  }
+	.red.button				{ background-color: #e91c21; }
+	.white.button			{ background-color: #e9e9e9; color: #333; }
+	.black.button			{ background-color: #141414; }
+	
+	/* Nice Colors ---------- */
+	.nice.blue.button		{ border: 1px solid #0593dc; background: #000 url(images/sitewide/button-gloss.png) repeat-x 0 -34px;  }
+	.nice.red.button		{ border: 1px solid #b90b0b; background: #000 url(images/sitewide/button-gloss.png) repeat-x 0 -34px;  }
+	.nice.white.button		{ border: 1px solid #cacaca; background: #000 url(images/sitewide/button-gloss.png) repeat-x 0 -34px;  }
+	.nice.black.button		{ border: 1px solid #000; background: #000 url(images/sitewide/button-gloss.png) repeat-x 0 -34px;  }
+	.nice.grey.button		{ border: 1px solid #909090; background: #909090 url(images/sitewide/grey_gradient.jpg) repeat-x 0 0;  }
+	
+	/* Hovers ---------- */
+	.button:hover, .button:focus 				{ background-color: #00447D; color: #fff; }
+	.blue.button:hover, .blue.button:focus		{ background-color: #0192dd; 	}
+	.red.button:hover, .red.button:focus 		{ background-color: #d01217; 	}
+	.white.button:hover, .white.button:focus	{ background-color: #dadada; color: #333; }
+	.black.button:hover, .black.button:focus	{ background-color: #000; }
+	
+	/* Disabled ---------- */
+	.button.disabled, .button[disabled] { opacity: 0.6; cursor: default; }
+
+
+/*==================================================================================================
+
+	12. MISC STYLES
+	
+==================================================================================================*/
+
+.align_right { text-align: right; }
+	
+.align_left { text-align: left;	}
+
+.align_centre { text-align: center;	}
+
+.aligncenter { margin: 0 auto; }
+
+.skip-link { position: absolute; top: -200px; left: 0px; width: 10px; height: 10px; z-index: 100; }
+
+div.pagination { float: left; width: 100%; padding: 20px 0 0 0;	}
+
+#map { height: 380px; margin: 0 0 10px 0; }
+
+img.featured_image { float: right; margin: 10px 0 10px 20px; }
+
+div#content img.alignright { float: right; margin: 0 0 10px 15px; }
+
+div#content img.alignleft { float: right; margin: 0 15px 10px 0; }
+
+/*-----------  Copied from Foundation - Jan 2012 - v2.1.4 http://foundation.zurb.com -----------------*/
+
+/* Hide for both screenreaders and browsers: css-discuss.incutio.com/wiki/Screenreader_Visibility */
+
+.hidden,
+article ul.links.inline,
+a.feed-icon,
+div#main div.resizable-textarea .grippie { display: none; visibility: hidden; }
+
+/* Hide only visually, but have it available for screenreaders: by Jon Neal. www.webaim.org/techniques/css/invisiblecontent/  &  j.mp/visuallyhidden */
+.visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+/* Extends the .visuallyhidden class to allow the element to be focusable when navigated to via the keyboard: drupal.org/node/897638 */
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
+
+/* Hide visually and from screenreaders, but maintain layout */
+.invisible { visibility: hidden; }
+
+/* The Magnificent Clearfix: Updated to prevent margin-collapsing on child elements in most situations.   nicolasgallagher.com/micro-clearfix-hack/ */
+.clearfix:before, .clearfix:after { content: ""; display: table; }
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }	
+

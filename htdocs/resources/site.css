@@ -1,0 +1,54 @@
+
+.dataacuk_bar {
+	background-color: #000;
+	color: #fff;
+	padding: 3px;
+}
+table.scheme, table.translations {
+	border-collapse: collapse;
+}
+table.scheme td, table.translations td {
+	border: solid 1px #000;
+	padding: 3px;
+}
+
+.download {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+h2 {
+	margin-top: 1em;
+}
+h3 {
+	margin-top: 1em;
+}
+#results {
+	margin-top: 8px;
+	max-height: 400px;
+	overflow: auto;
+	padding: 4px;
+	background-color: #eeeeee;
+	font-size:120%;
+}
+#results td { 
+	padding: 3px;
+}
+dt { 
+	font-weight: bold;
+}
+dd {
+	margin-bottom: 0.5em;
+}
+ul.bullets li { 
+	list-style: inside square;
+}
+ul.bullets ul { 
+	font-size: 100%;
+}
+
+div#content table td {
+	padding: 5px 3px 5px 3px;
+}
+i {
+	font-style: italic;
+}

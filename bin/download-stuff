@@ -1,0 +1,4 @@
+cd /home/dataacuk/data.ac.uk/learning-provider
+
+curl 'https://docs.google.com/spreadsheet/pub?key=0AqodCQwjuWZXdHdHRjhLV2p3eGk0N0JvbmtnR3pTc2c&single=true&gid=0&output=csv' > var/downloads/consortia-map.csv
+curl 'https://docs.google.com/spreadsheet/pub?key=0AqodCQwjuWZXdHdHRjhLV2p3eGk0N0JvbmtnR3pTc2c&single=true&gid=1&output=csv' > var/downloads/consortia.csv

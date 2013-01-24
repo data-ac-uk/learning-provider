@@ -3,35 +3,262 @@
 use FindBin;
 use Text::CSV;
 use Data::Dumper;
-#use lib "$FindBin::Bin/../perl_lib";
 
 use strict;
 use warnings;
 
 my $var_path = "$FindBin::Bin/../var";
 my $source_data_path = "$FindBin::Bin/../source-data";
-my $var_path = "$FindBin::Bin/../var/data";
+my $data_path = "$FindBin::Bin/../htdocs/data";
+my $ukprn_data_path = "$FindBin::Bin/../htdocs/ukprn";
+my $consortia_data_path = "$FindBin::Bin/../htdocs/consortium";
+
+############################################################
+# Load Data
+############################################################
 
 my $consortia_data = load_csv_file( "$var_path/downloads/consortia.csv", "ID" );
 my $consortia_map_data = load_csv_file( "$var_path/downloads/consortia-map.csv","UKPRN" );
 my $ukprn_data = load_csv_file( "$source_data_path/ukprn.csv", "UKPRN" );
 
-# outputs 
+foreach my $ukprn ( keys %$ukprn_data )
+{
+	$ukprn_data->{$ukprn}->{WEBSITE_URL} = "http://".$ukprn_data->{$ukprn}->{WEBSITE_ADDRESS} ."/";
+}
+foreach my $ukprn ( keys %$consortia_map_data )
+{
+	my $wikipedia = $consortia_map_data->{$ukprn}->{Wikipedia};
+	$ukprn_data->{$ukprn}->{WIKIPEDIA_URL} = $wikipedia;
+	$ukprn_data->{$ukprn}->{DBPEDIA_URI} = "http://dbpedia.org/resource/".
+		substr( $wikipedia, length( 'http://en.wikipedia.org/wiki/' ) );
+	my @consortia = ();
+	foreach my $c_id ( keys %{$consortia_map_data->{$ukprn}} )
+	{
+		if( $consortia_map_data->{$ukprn}->{$c_id} ne "" && $c_id =~ s/^C_// )
+		{
+			push @consortia, $c_id;
+		}
+	}
+	$ukprn_data->{$ukprn}->{CONSORTIA_LIST} = \@consortia;
+	$ukprn_data->{$ukprn}->{CONSORTIA} = join( ", ",@consortia );
+	foreach my $consortia_id ( @consortia )
+	{
+		$consortia_data->{$consortia_id}->{MEMBERS_HASH}->{$ukprn} = $ukprn_data->{$ukprn};
+	}	
+}
+foreach my $consortia_id ( keys %$consortia_data )
+{
+	$consortia_data->{$consortia_id}->{DBPEDIA_URI} = "http://dbpedia.org/resource/".
+		substr( $consortia_data->{$consortia_id}->{Wikipedia}, length( 'http://en.wikipedia.org/wiki/' ) );
+}
 
-# learning-provider csv raw
-# learning-provider csv cooked
+############################################################
+# Output Data
+############################################################
+
+# learning-provider csv raw 
+output_tsv_file( 
+	$data_path."/learning-providers.tsv",
+	$ukprn_data,
+	[qw/
+            UKPRN
+            PROVIDER_NAME
+            ALIAS
+            FLAT_NAME_NUMBER
+            BUILDING_NAME_NUMBER
+            LOCALITY
+            STREET_NAME
+            TOWN
+            POSTCODE
+            WEBSITE_ADDRESS
+            PRIMARY_CONTACT_POSTCODE
+	/] );
+
+
+# learning-provider tsv cooked 
+output_tsv_file( 
+	$data_path."/learning-providers-plus.tsv",
+	$ukprn_data,
+	[qw/
+            UKPRN
+            PROVIDER_NAME
+            ALIAS
+            FLAT_NAME_NUMBER
+            BUILDING_NAME_NUMBER
+            LOCALITY
+            STREET_NAME
+            TOWN
+            POSTCODE
+            WEBSITE_URL
+            PRIMARY_CONTACT_POSTCODE
+            WIKIPEDIA
+            CONSORTIA
+	/] );
+
 # learning-provider ttl raw
-# learning-provider ttl cooked
-# consortia csv
-# consortia ttl
-# per university ttl
-# per university html?
-# per consortia html?
+{
+	my $file = $data_path."/learning-providers.ttl";
+	my $fh;
+	open( $fh, ">:utf8", $file ) ||
+		die "Failed to write file '$file': $!";
+	print $fh learning_provider_ttl_headers();
+	foreach my $learning_provider ( values %$ukprn_data )
+	{
+		print $fh learning_provider_ttl( $learning_provider, $consortia_data );
+	}
+	close $fh;
+}
+
+# learning-provider ttl plus
+{
+	my $file = $data_path."/learning-providers-plus.ttl";
+	my $fh;
+	open( $fh, ">:utf8", $file ) ||
+		die "Failed to write file '$file': $!";
+	print $fh learning_provider_plus_ttl_headers();
+	foreach my $learning_provider ( values %$ukprn_data )
+	{
+		print $fh learning_provider_plus_ttl( $learning_provider, $consortia_data );
+	}
+	close $fh;
+}
+
+# consortia tsv
+output_tsv_file( 
+	$data_path."/consortia.tsv",
+	$consortia_data,
+	[
+	    "ID",
+            "Group Name",
+            "Homepage",
+            "Wikipedia",
+            "Members List"
+	] );
+
+
+# consortia ttl 
+{
+	my $file = $data_path."/consortia.ttl";
+	my $fh;
+	open( $fh, ">:utf8", $file ) ||
+		die "Failed to write file '$file': $!";
+	print $fh consortium_ttl_headers();
+	foreach my $consortium ( values %$consortia_data )
+	{
+		print $fh consortium_ttl( $consortium, $ukprn_data );
+	}
+	close $fh;
+}
+
 # dbpedia linkset ttl
+{
+	my $file = $data_path."/dbpedia-linkset.ttl";
+	my $fh;
+	open( $fh, ">:utf8", $file ) ||
+		die "Failed to write file '$file': $!";
+	print $fh '@prefix owl: <http://www.w3.org/2002/07/owl#> .
+';
+	foreach my $lp ( values %$ukprn_data )
+	{
+		print $fh '<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'> owl:sameAs <'.$lp->{DBPEDIA_URI}.'> .
+';
+	}
+	foreach my $consortium ( values %$consortia_data )
+	{
+		print $fh '<http://id.learning-provider.data.ac.uk/consortium/'.$consortium->{ID}.'> owl:sameAs <'.$consortium->{DBPEDIA_URI}.'> .
+';
+	}
+	close $fh;
+}
+
+# per university ttl
+{
+	foreach my $learning_provider ( values %$ukprn_data )
+	{
+		my $file = $ukprn_data_path."/".$learning_provider->{UKPRN}.".ttl";
+		my $fh;
+		open( $fh, ">:utf8", $file ) ||
+			die "Failed to write file '$file': $!";
+		print $fh learning_provider_plus_ttl_headers();
+		print $fh learning_provider_plus_ttl( $learning_provider, $consortia_data );
+		close $fh;
+	}
+}
+
+# per consortia ttl
+{
+	foreach my $consortium ( values %$consortia_data )
+	{
+		my $file = $consortia_data_path."/".$consortium->{ID}.".ttl";
+		my $fh;
+		open( $fh, ">:utf8", $file ) ||
+			die "Failed to write file '$file': $!";
+		print $fh consortium_ttl_headers();
+		print $fh consortium_ttl( $consortium, $ukprn_data );
+		close $fh;
+	}
+}
 
 
+# js quick search file - TODO
+{
+	my $file = $data_path."/learning-providers-lookup.html.fragment";
+	my $fh;
+	open( $fh, ">:utf8", $file ) ||
+		die "Failed to write file '$file': $!";
 
+	print $fh "<div style='margin-top:1em;width:99\%' id='filterList'>\n";
+	foreach my $lp ( sort { $a->{PROVIDER_NAME} cmp $b->{PROVIDER_NAME} } values %$ukprn_data )
+	{
+		print $fh '<div id="ukprn-'.$lp->{UKPRN}.'" style="display:none">';
+		print $fh '<div style="float:left;padding-right:1em"><a href="/ukprn/'.$lp->{UKPRN}.'.html">'.$lp->{UKPRN}.'</a></div>';
+		print $fh '<div style="float:left;width:50%">'.$lp->{"PROVIDER_NAME"}.'</div>';
+		print $fh '<div stlye="width:30%"><a href="'.$lp->{WEBSITE_URL}.'">'.$lp->{WEBSITE_URL}.'</a></div>';
+		print $fh '</div>
+';
+	}
+	print $fh "</div>\n";
+
+	print $fh "<script type='text/javascript' src='/resources/filter.js'></script>\n";
+	my @list = ();
+	foreach my $lp ( sort { $a->{PROVIDER_NAME} cmp $b->{PROVIDER_NAME} } values %$ukprn_data )
+	{
+		my $id = "ukprn-".$lp->{UKPRN};
+		my $text = lc ($lp->{PROVIDER_NAME}." ".$lp->{UKPRN}." ".$lp->{WEBSITE_ADDRESS});
+		$text =~ s/[^a-z0-9]/ /g;
+		push @list, "'$id': '$text'";
+	}
+
+
+	print $fh "<script type='text/javascript'>\n";
+	print $fh "var lpfilter = new filterlist( 'filterList', {\n".join( ",\n", @list)."\n});\n";
+	print $fh 'function dofilter()
+{
+	var regex = document.getElementById("regexp").value;
+	if( regex == "" ) { regex = "NOMATCH"; } // force nothing to show if string is empty
+	lpfilter.set( regex );
+}
+';
+	print $fh "</script>\n";
+	
+	close $fh;
+}
+
+# TODO: URI resolution consortia & instututions
+# TODO: Browse function
+# TODO: Handle million+ URI & URL
+# TODO: Document URIs-->content neg.
+# TODO: Document RDF
+# TODO: Document Data Links
+# TODO: per university html?
+# TODO: per consortia html?
+
+# TODO: add license data to ttl
+# TODO: Postcode lat/long/east/north lookup
+
+############################################################
 exit;
+############################################################
 
 sub load_csv_file
 {
@@ -43,8 +270,9 @@ sub load_csv_file
 
         open my $fh, "<:encoding(utf8)", "$filename" or die "$filename: $!";
         my $fields = $csv->getline( $fh );
+	#my $fields = [];
+	#foreach ( @$fields_line ) { push @$fields, uc $_; }
 	my $number_of_fields = scalar @$fields;
-	print Dumper( $fields );
         while ( my $row = $csv->getline( $fh ) ) {
 		my $row_data = {};
 		for my $i (0..($number_of_fields-1) )
@@ -57,6 +285,173 @@ sub load_csv_file
         close $fh;
 
 	return $data;
+}
+
+sub output_tsv_file
+{
+	my( $file, $data, $fields ) = @_;
+
+	my $fh;
+	open( $fh, ">:utf8", $file ) ||
+		die "Failed to write file '$file': $!";
+	print $fh join( "\t", @$fields )."\n";
+	foreach my $row ( values %$data )
+	{
+		my @output;
+		foreach my $field ( @$fields )
+		{
+			my $v = $row->{$field};
+			$v = "" if !defined $v;
+			push @output, $v;
+		}
+		print $fh join( "\t", @output )."\n";
+	}
+	close $fh;
+}
+	
+sub consortium_ttl_headers
+{
+	return '
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+';
+}
+
+sub consortium_ttl
+{
+	my( $consortium, $ukprn_data ) = @_;
+	my $ttl = '
+<http://id.learning-provider.data.ac.uk/consortium/'.$consortium->{ID}.'>
+	a foaf:Organization ;
+	rdfs:label "'.ttl_esc( $consortium->{"Group Name"} ).'" ;
+	owl:sameAs <'.$consortium->{DBPEDIA_URI}.'> ;
+	foaf:isPrimaryTopicOf <'.$consortium->{Wikipedia}.'> ;
+';
+	foreach my $member ( values %{$consortium->{MEMBERS_HASH}} )
+	{
+		$ttl .= '	foaf:member <http://id.learning-provider.data.ac.uk/ukprn/'.$member->{UKPRN}.'> ;
+';
+	}
+	$ttl .= '	foaf:homepage <'.$consortium->{Homepage}.'> .
+';
+	foreach my $member ( values %{$consortium->{MEMBERS_HASH}} )
+	{
+		$ttl .= '
+<http://id.learning-provider.data.ac.uk/ukprn/'.$member->{UKPRN}.'>
+	a foaf:Organization ;
+	rdfs:label "'.ttl_esc( $member->{"PROVIDER_NAME"} ).'" ;
+	foaf:homepage <'.$member->{WEBSITE_URL}.'> .
+';
+	}
+	return $ttl;
+}
+
+sub learning_provider_ttl_headers
+{
+	return '
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix aiiso: <http://purl.org/vocab/aiiso/schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix oo:     <http://purl.org/openorg/> .
+@prefix vcard:  <http://www.w3.org/2006/vcard/ns#> .
+@prefix ospost: <http://data.ordnancesurvey.co.uk/ontology/postcode/> .
+'
+}
+
+sub learning_provider_ttl
+{
+	my( $lp, $consortia_data ) = @_;
+
+	my @locality = ();
+	push @locality, $lp->{LOCALITY} if $lp->{LOCALITY} ne "";
+	push @locality, $lp->{TOWN} if $lp->{TOWN} ne "";
+	my @street = ();
+	push @street, $lp->{FLAT_NAME_NUMBER} if $lp->{FLAT_NAME_NUMBER} ne "";
+	push @street, $lp->{BUILDING_NAME_NUMBER} if $lp->{BUILDING_NAME_NUMBER} ne "";
+	push @street, $lp->{STREET_NAME} if $lp->{STREET_NAME} ne "";
+
+	my $ttl = '
+<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>
+	a foaf:Organization ;
+	a aiiso:Institution ;
+	rdfs:label "'.ttl_esc( $lp->{"PROVIDER_NAME"} ).'" ;
+	skos:notation "'.$lp->{UKPRN}.'"^^<http://id.learning-provider.data.ac.uk/ns/UKPRNSchemeDatatype> ;
+        oo:primaryContact <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#contact> ;
+        ospost:postcode <http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{POSTCODE} ).'> ;
+	vcard:adr <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#address> ;
+	foaf:homepage <'.$lp->{WEBSITE_URL}.'> .
+<http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{POSTCODE} ).'> rdfs:label "'.$lp->{POSTCODE}.'" .
+<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#address>
+	a vcard:Address ;
+	vcard:postal-code "'.$lp->{POSTCODE}.'" ;
+	vcard:country-name "United Kingdom" ;
+        vcard:street-address "'.join( ", ", @street ).'" ;
+        vcard:locality "'.join( ", ", @locality ).'" .
+<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#contact> 
+	a foaf:Agent ;
+	vcard:adr <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#contact-address> ;
+        ospost:postcode <http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{PRIMARY_CONTACT_POSTCODE} ).'> .
+<http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{PRIMARY_CONTACT_POSTCODE} ).'> rdfs:label "'.$lp->{PRIMARY_CONTACT_POSTCODE}.'" .
+<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#contact-address>
+	a vcard:Address ;
+	vcard:postal-code "'.$lp->{PRIMARY_CONTACT_POSTCODE}.'" .
+';
+
+	return $ttl;
+}
+
+sub learning_provider_plus_ttl_headers
+{
+	return learning_provider_ttl_headers().'
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+';
+}
+sub learning_provider_plus_ttl
+{
+	my( $lp, $consortia_data ) = @_;
+
+	my $ttl = learning_provider_ttl( $lp, $consortia_data );
+	$ttl.='
+<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>
+	foaf:isPrimaryTopicOf <'.$lp->{WIKIPEDIA_URL}.'> ;
+	owl:sameAs <'.$lp->{DBPEDIA_URI}.'> .
+';
+	foreach my $consortia_id ( @{$lp->{CONSORTIA_LIST}} )
+	{
+		my $consortium = $consortia_data->{$consortia_id};
+		$ttl .='
+<http://id.learning-provider.data.ac.uk/consortium/'.$consortium->{ID}.'>
+	a foaf:Organization ;
+	rdfs:label "'.ttl_esc( $consortium->{"Group Name"} ).'" ;
+	owl:sameAs <'.$consortium->{DBPEDIA_URI}.'> ;
+	foaf:homepage <'.$consortium->{Homepage}.'> ;
+	foaf:isPrimaryTopicOf <'.$consortium->{Wikipedia}.'> ;
+	foaf:member <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'> .
+';
+	}
+	return $ttl;
+}
+
+	
+
+sub dewhitespace
+{
+	my( $text ) = @_;
+
+	$text =~ s/\s+//g;
+	
+	return $text;
+}
+
+sub ttl_esc
+{
+	my( $text ) = @_;
+
+	$text =~ s/(["\\'])/\\$1/g;
+	
+	return $text;
 }
 
 __DATA__
@@ -90,16 +485,58 @@ Consortia map
             'UKPRN' => '10007657',
             'PROVIDER_NAME' => 'WRITTLE COLLEGE', # cosmetic, ignore
             'Wikipedia' => 'http://en.wikipedia.org/wiki/Writtle_College',
-
-
-Million%2B
-Russell_Group
-NCUK
-University_Alliance
-1994_Group
-White_Rose_University_Consortium
-N8_Research_Partnership
+C_Million%2B
+C_Russell_Group
+C_NCUK
+C_University_Alliance
+C_1994_Group
+C_White_Rose_University_Consortium
+C_N8_Research_Partnership
           },
 
+-- inst. basic
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix aiiso: <http://purl.org/vocab/aiiso/schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix oo:     <http://purl.org/openorg/> .
+@prefix vcard:  <http://www.w3.org/2006/vcard/ns#> .
+@prefix ospost: <http://data.ordnancesurvey.co.uk/ontology/postcode/> .
 
+<http://id.learning-provider.data.ac.uk/ukprn/XXX>
+	a aiiso:Institution ;
+	a foaf:Organization ;
+	rdfs:label "XXXXX" ;
+	skos:notation "XXXX"^^<http://id.learning-provider.data.ac.uk/ns/UKPRNSchemeDatatype> ;
+        oo:primaryContact <http://id.learning-provider.data.ac.uk/ukprn/XXX#contact> ;
+        ospost:postcode <http://data.ordnancesurvey.co.uk/id/postcodeunit/XXXXX> ;
+	foaf:homepage <XXXXXXX> .
+
+<http://id.learning-provider.data.ac.uk/ukprn/XXX#address>
+	a vcard:Address ;
+	vcard:postal-code "XXX" ;
+	vcard:country-name "United Kingdom" ;
+        vcard:street-address "XXX(flat) XXX(building) XXXX(street_name)" ;
+        vcard:locality "XXX(locality) XXX(town)" ;
+
+<http://id.learning-provider.data.ac.uk/ukprn/XXX#contact> 
+	a foaf:Agent ;
+	vcard:adr <http://id.learning-provider.data.ac.uk/ukprn/XXX#contact-address> ;
+        ospost:postcode <http://data.ordnancesurvey.co.uk/id/postcodeunit/XXXXX> .
+
+-- inst. plus
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<http://id.learning-provider.data.ac.uk/ukprn/XXX>
+	foaf:isPrimaryTopicOf <WIKIPEDIA> ;
+	owl:sameAs <DBPEDIA> .
+<http://id.learning-provider.data.ac.uk/consortium/XXXXX>
+	a foaf:Organization ;
+	rdfs:label "XXXX" ;
+	owl:sameAs <DBPEDIA> ;
+	foaf:isPrimaryTopicOf <WIKIPEDIA> ;
+	foaf:homepage <XXXXXXX> ;
+	foaf:member <http://id.learning-provider.data.ac.uk/ukprn/XXX> .
+
+	
 

@@ -1,0 +1,53 @@
+#!/usr/bin/php 
+<?php
+# this needs to be run from the base dirctory for the paths to work
+require_once( "lib/arc2/ARC2.php" );
+require_once( "lib/Graphite/Graphite.php" );
+$postcode_cache = "var/postcodes";
+$source_data_path = "source-data";
+
+############################################################
+# Load Data
+############################################################
+$postcodes = array();
+if (($handle = fopen("$source_data_path/ukprn.csv", "r")) !== FALSE) {
+    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+	if( $data[8] != "POSTCODE" )
+	{
+		$postcodes[preg_replace( '/\s/','',$data[8])] = true;
+	}
+    }
+    fclose($handle);
+}
+############################################################
+# Load Data
+############################################################
+$csv = "POSTCODE,EASTING,NORTHING,LATITUDE,LONGITUDE\n";
+foreach( $postcodes as $postcode=>$dummy )
+{
+	print $postcode."\n";
+	$cache = "$postcode_cache/$postcode";
+	if( !file_exists($cache ))
+	{
+		$graph = new Graphite();
+		$graph->ns( "spacerel", "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/" );
+		$pcuri = "http://data.ordnancesurvey.co.uk/id/postcodeunit/$postcode";
+		$n = $graph->load( $pcuri );
+		$fh = fopen( $cache, "w" );
+		if( $n )
+		{
+			$pcres = $graph->resource( $pcuri );
+			fwrite( $fh, "$postcode" );
+			fwrite( $fh, ",".$pcres->getString( "spacerel:easting" ) );
+			fwrite( $fh, ",".$pcres->getString( "spacerel:northing" ) );
+			fwrite( $fh, ",".$pcres->getString( "geo:lat" ) );
+			fwrite( $fh, ",".$pcres->getString( "geo:long" ) );
+			fwrite( $fh, "\n" );
+		}
+		fclose( $fh );
+	}
+	$csv .= file_get_contents( $cache );
+}
+$fh = fopen($postcode_cache."/postcodes.csv", 'w') or die("can't open file: $postcode_cache/postcodes.csv");
+fwrite($fh, $csv );
+fclose($fh);

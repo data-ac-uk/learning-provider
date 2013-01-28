@@ -1,8 +1,11 @@
 
-.dataacuk_bar {
+#data-ac-uk-bar {
 	background-color: #000;
 	color: #fff;
-	padding: 3px;
+	padding: 4px 20px 4px 20px;
+}
+#data-ac-uk-bar a {
+	color: #ccf;
 }
 table.scheme, table.translations {
 	border-collapse: collapse;

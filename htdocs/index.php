@@ -53,9 +53,14 @@ $f3->route('GET /ukprn/@file',
 		$graph->load( $file );
 		$uri = "http://id.learning-provider.data.ac.uk/ukprn/$ukprn";
 		$lp = $graph->resource( $uri );
-		
 		$content = "";
-
+		
+		$pc = $lp->get("ospost:postcode");
+		if( $pc->has( "geo:lat" ) )
+		{
+			$content .= "</div>";
+			$content .= "<div class='ten columns'>";
+		}
 		$content .= "<p><strong>URI:</strong> $uri</p>\n";
 
 		$adr = $lp->get("vcard:adr" );
@@ -73,7 +78,7 @@ $f3->route('GET /ukprn/@file',
 		$content .= "<p><strong>Wikipedia:</strong> ".$lp->get( "foaf:isPrimaryTopicOf" )->link()."</p>\n";
 		if( $lp->has( "-foaf:member" ) )
 		{
-			$content.= "<h3>Member of</h3><ul>";
+			$content.= "<h3>Member of</h3><ul class='bullets'>";
 			foreach( $lp->all( "-foaf:member" )->sort( "rdfs:label" ) as $org )
 			{
 				# sloppy linking as URI does not auto-detect HTML preference
@@ -85,26 +90,58 @@ $f3->route('GET /ukprn/@file',
 		$content .= "
 <h3>Data</h3>
 <table><tr>
- <td style='width:40px;'><a href='turtle/code-03221410.ttl'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/ukprn/ukprn.ttl'>".$lp->label()."</a></strong> - RDF Description (.ttl)</td>
+ <td style='width:40px;'><a href='/ukprn/$ukprn.ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/ukprn/$ukprn.ttl'>".$lp->label()."</a></strong> - RDF Description (.ttl)</td>
 </tr></table>
 ";
+		if( $pc->has( "geo:lat" ) )
+		{
+			$content .= "</div>";
+			$content .= "<div class='six columns'>";
+			$lat = $pc->get( "geo:lat" );
+			$long = $pc->get( "geo:long" );
+			#$content.=$lat." ".$long.'
+			$content.='
+    <script src="http://openlayers.org/api/OpenLayers.js"></script>
+      <div style="border:solid 1px #ccc;width:300px; height:300px;float:right" id="map"></div>
+<script>
+var map = new OpenLayers.Map("map");
+var wms = new OpenLayers.Layer.OSM();
+map.addLayer(wms);
+
+var lonLat = new OpenLayers.LonLat( '.$long.','.$lat.')
+         .transform(
+            new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+            map.getProjectionObject() // to Spherical Mercator Projection
+          );
+ 
+var zoom = 9;
+
+var markers = new OpenLayers.Layer.Markers( "Markers" );
+map.addLayer(markers);
+markers.addMarker(new OpenLayers.Marker(lonLat));
+map.setCenter( lonLat, zoom );
+</script>
+   ';
+			$content .= "</div>";
+			$content .= "<div class='sixteen columns'>";
+}
 
 		print render_page( $lp->label()." - Learning Provider", $content );
 
 	}
 );
 
-$f3->route('GET /consortium/@file',
+$f3->route('GET /group/@file',
 	function() use($f3) {
-		@list( $consortium, $format ) = preg_split( "/\./", $f3->get('PARAMS.file'), 2 );
-		$file = "consortium/$consortium.ttl";
+		@list( $group, $format ) = preg_split( "/\./", $f3->get('PARAMS.file'), 2 );
+		$file = "group/$group.ttl";
 		if( !file_exists( $file ) ) { $f3->error(404); exit; }
 
 		if( $format == "" )
 		{
 			header( "HTTP/1.1 303 See Other" );
-			header( "Location: http://learning-provider.data.ac.uk/consortium/$consortium.ttl" );
+			header( "Location: http://learning-provider.data.ac.uk/group/$group.ttl" );
 			exit;
 		}
 
@@ -115,12 +152,72 @@ $f3->route('GET /consortium/@file',
 		}
 
 		$graph = new Graphite();
+		$graph->ns( "ospost", "http://data.ordnancesurvey.co.uk/ontology/postcode/" );
+		$graph->ns( "vcard", "http://www.w3.org/2006/vcard/ns#" );
 		$graph->load( $file );
-		print $graph->dump();
+		$uri = "http://id.learning-provider.data.ac.uk/group/$group";
+		$c_res = $graph->resource( $uri );
+		$content = "";
+		
+		$content .= "</div><div class='ten columns'>";
+		$content .= "<p><strong>URI:</strong> $uri</p>\n";
+
+		$content .= "<p><strong>Homepage:</strong> ".$c_res->get( "foaf:homepage" )->link()."</p>\n";
+
+		# lazy, assumes only one isPrimaryTopicOf
+		$content .= "<p><strong>Wikipedia:</strong> ".$c_res->get( "foaf:isPrimaryTopicOf" )->link()."</p>\n";
+		$content .= "</div><div class='six columns'>";
+		$content .= "
+<h3>Data</h3>
+<table>
+<tr>
+ <td style='width:40px;'><a href='turtle/$group.ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/group/$group.ttl'>".$c_res->label()."</a></strong> - RDF Description (.ttl)</td>
+</tr>
+<tr>
+ <td style='width:40px;'><a href='turtle/$group.tsv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/group/$group.tsv'>".$c_res->label()."</a></strong> - List of members (.tsv)</td>
+</tr>
+</table>
+";
+		$content .= "</div><div class='sixteen columns'>";
+		$content.= "<h3>Members</h3><table class='scheme'>";
+		foreach( $c_res->all( "foaf:member" )->sort( "rdfs:label" ) as $lp )
+		{
+			# sloppy linking as URI does not auto-detect HTML preference
+			$content.= "<tr>";
+			$content.= "<td>".$lp->get("foaf:homepage")->link()."</td>";
+			$content.= "<td><a href='".$lp.".html'>".$lp->label()."</a></td>";
+			$content.= "</tr>";
+		}
+		$content .= "</table>";
+
+		print render_page( $c_res->label()." - University Group", $content );
 	}
 );
 
 
+$f3->route('GET /all.html',
+	function() use($f3) {
+		$graph = new Graphite();
+		$graph->ns( "ospost", "http://data.ordnancesurvey.co.uk/ontology/postcode/" );
+		$graph->ns( "vcard", "http://www.w3.org/2006/vcard/ns#" );
+		$graph->load( "data/learning-providers.ttl" );
+		$content = "";
+		$content.= "<table class='scheme'>";
+		foreach( $graph->allOfType( "http://purl.org/vocab/aiiso/schema#Institution" )->sort( "rdfs:label" ) as $lp )
+		{
+			# sloppy linking as URI does not auto-detect HTML preference
+			$content.= "<tr>";
+			$content.= "<td>".$lp->get("foaf:homepage")->link()."</td>";
+			$content.= "<td><a href='".$lp.".html'>".$lp->label()."</a></td>";
+			$content.= "</tr>";
+		}
+		$content .= "</table>";
+		print render_page( "All UK Universities", $content );
+	}
+);
+		
 
 
 $f3->run();

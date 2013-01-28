@@ -11,45 +11,54 @@ my $var_path = "$FindBin::Bin/../var";
 my $source_data_path = "$FindBin::Bin/../source-data";
 my $data_path = "$FindBin::Bin/../htdocs/data";
 my $ukprn_data_path = "$FindBin::Bin/../htdocs/ukprn";
-my $consortia_data_path = "$FindBin::Bin/../htdocs/consortium";
+my $groups_data_path = "$FindBin::Bin/../htdocs/group";
 
 ############################################################
 # Load Data
 ############################################################
 
-my $consortia_data = load_csv_file( "$var_path/downloads/consortia.csv", "ID" );
-my $consortia_map_data = load_csv_file( "$var_path/downloads/consortia-map.csv","UKPRN" );
+my $groups_data = load_csv_file( "$var_path/downloads/groups.csv", "ID" );
+my $groups_map_data = load_csv_file( "$var_path/downloads/groups-map.csv","UKPRN" );
 my $ukprn_data = load_csv_file( "$source_data_path/ukprn.csv", "UKPRN" );
+my $postcode_data = load_csv_file( "$var_path/postcodes/postcodes.csv", "POSTCODE" );
 
 foreach my $ukprn ( keys %$ukprn_data )
 {
 	$ukprn_data->{$ukprn}->{WEBSITE_URL} = "http://".$ukprn_data->{$ukprn}->{WEBSITE_ADDRESS} ."/";
+	my $pcdata = $postcode_data->{ dewhitespace( $ukprn_data->{$ukprn}->{POSTCODE} ) };
+	if( defined $pcdata )
+	{
+		$ukprn_data->{$ukprn}->{LATITUDE} = $pcdata->{LATITUDE};
+		$ukprn_data->{$ukprn}->{LONGITUDE} = $pcdata->{LONGITUDE};
+		$ukprn_data->{$ukprn}->{EASTING} = $pcdata->{EASTING};
+		$ukprn_data->{$ukprn}->{NORTHING} = $pcdata->{NORTHING};
+	}
 }
-foreach my $ukprn ( keys %$consortia_map_data )
+foreach my $ukprn ( keys %$groups_map_data )
 {
-	my $wikipedia = $consortia_map_data->{$ukprn}->{Wikipedia};
+	my $wikipedia = $groups_map_data->{$ukprn}->{Wikipedia};
 	$ukprn_data->{$ukprn}->{WIKIPEDIA_URL} = $wikipedia;
 	$ukprn_data->{$ukprn}->{DBPEDIA_URI} = "http://dbpedia.org/resource/".
 		substr( $wikipedia, length( 'http://en.wikipedia.org/wiki/' ) );
-	my @consortia = ();
-	foreach my $c_id ( keys %{$consortia_map_data->{$ukprn}} )
+	my @groups = ();
+	foreach my $c_id ( keys %{$groups_map_data->{$ukprn}} )
 	{
-		if( $consortia_map_data->{$ukprn}->{$c_id} ne "" && $c_id =~ s/^C_// )
+		if( $groups_map_data->{$ukprn}->{$c_id} ne "" && $c_id =~ s/^C_// )
 		{
-			push @consortia, $c_id;
+			push @groups, $c_id;
 		}
 	}
-	$ukprn_data->{$ukprn}->{CONSORTIA_LIST} = \@consortia;
-	$ukprn_data->{$ukprn}->{CONSORTIA} = join( ", ",@consortia );
-	foreach my $consortia_id ( @consortia )
+	$ukprn_data->{$ukprn}->{GROUPS_LIST} = \@groups;
+	$ukprn_data->{$ukprn}->{GROUPS} = join( ", ",@groups );
+	foreach my $groups_id ( @groups )
 	{
-		$consortia_data->{$consortia_id}->{MEMBERS_HASH}->{$ukprn} = $ukprn_data->{$ukprn};
+		$groups_data->{$groups_id}->{MEMBERS_HASH}->{$ukprn} = $ukprn_data->{$ukprn};
 	}	
 }
-foreach my $consortia_id ( keys %$consortia_data )
+foreach my $groups_id ( keys %$groups_data )
 {
-	$consortia_data->{$consortia_id}->{DBPEDIA_URI} = "http://dbpedia.org/resource/".
-		substr( $consortia_data->{$consortia_id}->{Wikipedia}, length( 'http://en.wikipedia.org/wiki/' ) );
+	$groups_data->{$groups_id}->{DBPEDIA_URI} = "http://dbpedia.org/resource/".
+		substr( $groups_data->{$groups_id}->{Wikipedia}, length( 'http://en.wikipedia.org/wiki/' ) );
 }
 
 ############################################################
@@ -74,12 +83,7 @@ output_tsv_file(
             PRIMARY_CONTACT_POSTCODE
 	/] );
 
-
-# learning-provider tsv cooked 
-output_tsv_file( 
-	$data_path."/learning-providers-plus.tsv",
-	$ukprn_data,
-	[qw/
+my $lp_plus_fields = [qw/
             UKPRN
             PROVIDER_NAME
             ALIAS
@@ -92,8 +96,17 @@ output_tsv_file(
             WEBSITE_URL
             PRIMARY_CONTACT_POSTCODE
             WIKIPEDIA
-            CONSORTIA
-	/] );
+            GROUPS
+            LONGITUDE
+            LATITUDE
+            EASTING
+            NORTHING
+	/];
+# learning-provider tsv cooked 
+output_tsv_file( 
+	$data_path."/learning-providers-plus.tsv",
+	$ukprn_data,
+	$lp_plus_fields );
 
 # learning-provider ttl raw
 {
@@ -104,7 +117,7 @@ output_tsv_file(
 	print $fh learning_provider_ttl_headers();
 	foreach my $learning_provider ( values %$ukprn_data )
 	{
-		print $fh learning_provider_ttl( $learning_provider, $consortia_data );
+		print $fh learning_provider_ttl( $learning_provider, $groups_data );
 	}
 	close $fh;
 }
@@ -118,15 +131,15 @@ output_tsv_file(
 	print $fh learning_provider_plus_ttl_headers();
 	foreach my $learning_provider ( values %$ukprn_data )
 	{
-		print $fh learning_provider_plus_ttl( $learning_provider, $consortia_data );
+		print $fh learning_provider_plus_ttl( $learning_provider, $groups_data );
 	}
 	close $fh;
 }
 
-# consortia tsv
+# groups tsv
 output_tsv_file( 
-	$data_path."/consortia.tsv",
-	$consortia_data,
+	$data_path."/groups.tsv",
+	$groups_data,
 	[
 	    "ID",
             "Group Name",
@@ -136,16 +149,16 @@ output_tsv_file(
 	] );
 
 
-# consortia ttl 
+# groups ttl 
 {
-	my $file = $data_path."/consortia.ttl";
+	my $file = $data_path."/groups.ttl";
 	my $fh;
 	open( $fh, ">:utf8", $file ) ||
 		die "Failed to write file '$file': $!";
-	print $fh consortium_ttl_headers();
-	foreach my $consortium ( values %$consortia_data )
+	print $fh group_ttl_headers();
+	foreach my $group ( values %$groups_data )
 	{
-		print $fh consortium_ttl( $consortium, $ukprn_data );
+		print $fh group_ttl( $group, $ukprn_data );
 	}
 	close $fh;
 }
@@ -163,9 +176,9 @@ output_tsv_file(
 		print $fh '<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'> owl:sameAs <'.$lp->{DBPEDIA_URI}.'> .
 ';
 	}
-	foreach my $consortium ( values %$consortia_data )
+	foreach my $group ( values %$groups_data )
 	{
-		print $fh '<http://id.learning-provider.data.ac.uk/consortium/'.$consortium->{ID}.'> owl:sameAs <'.$consortium->{DBPEDIA_URI}.'> .
+		print $fh '<http://id.learning-provider.data.ac.uk/group/'.$group->{ID}.'> owl:sameAs <'.$group->{DBPEDIA_URI}.'> .
 ';
 	}
 	close $fh;
@@ -180,27 +193,32 @@ output_tsv_file(
 		open( $fh, ">:utf8", $file ) ||
 			die "Failed to write file '$file': $!";
 		print $fh learning_provider_plus_ttl_headers();
-		print $fh learning_provider_plus_ttl( $learning_provider, $consortia_data );
+		print $fh learning_provider_plus_ttl( $learning_provider, $groups_data );
 		close $fh;
 	}
 }
 
-# per consortia ttl
+# per groups ttl and tsv
 {
-	foreach my $consortium ( values %$consortia_data )
+	foreach my $group ( values %$groups_data )
 	{
-		my $file = $consortia_data_path."/".$consortium->{ID}.".ttl";
+		my $file = $groups_data_path."/".$group->{ID}.".ttl";
 		my $fh;
 		open( $fh, ">:utf8", $file ) ||
 			die "Failed to write file '$file': $!";
-		print $fh consortium_ttl_headers();
-		print $fh consortium_ttl( $consortium, $ukprn_data );
+		print $fh group_ttl_headers();
+		print $fh group_ttl( $group, $ukprn_data );
 		close $fh;
+
+		output_tsv_file( 
+			$groups_data_path."/".$group->{ID}.".tsv",
+			$group->{MEMBERS_HASH},
+			$lp_plus_fields );
 	}
 }
 
 
-# js quick search file - TODO
+# js quick search file 
 {
 	my $file = $data_path."/learning-providers-lookup.html.fragment";
 	my $fh;
@@ -212,7 +230,7 @@ output_tsv_file(
 	{
 		print $fh '<div id="ukprn-'.$lp->{UKPRN}.'" style="display:none">';
 		print $fh '<div style="float:left;padding-right:1em"><a href="/ukprn/'.$lp->{UKPRN}.'.html">'.$lp->{UKPRN}.'</a></div>';
-		print $fh '<div style="float:left;width:50%">'.$lp->{"PROVIDER_NAME"}.'</div>';
+		print $fh '<div style="float:left;width:50%"><a href="/ukprn/'.$lp->{UKPRN}.'.html">'.$lp->{PROVIDER_NAME}.'</a></div>';
 		print $fh '<div stlye="width:30%"><a href="'.$lp->{WEBSITE_URL}.'">'.$lp->{WEBSITE_URL}.'</a></div>';
 		print $fh '</div>
 ';
@@ -243,18 +261,6 @@ output_tsv_file(
 	
 	close $fh;
 }
-
-# TODO: URI resolution consortia & instututions
-# TODO: Browse function
-# TODO: Handle million+ URI & URL
-# TODO: Document URIs-->content neg.
-# TODO: Document RDF
-# TODO: Document Data Links
-# TODO: per university html?
-# TODO: per consortia html?
-
-# TODO: add license data to ttl
-# TODO: Postcode lat/long/east/north lookup
 
 ############################################################
 exit;
@@ -309,7 +315,7 @@ sub output_tsv_file
 	close $fh;
 }
 	
-sub consortium_ttl_headers
+sub group_ttl_headers
 {
 	return '
 @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -318,24 +324,24 @@ sub consortium_ttl_headers
 ';
 }
 
-sub consortium_ttl
+sub group_ttl
 {
-	my( $consortium, $ukprn_data ) = @_;
+	my( $group, $ukprn_data ) = @_;
 	my $ttl = '
-<http://id.learning-provider.data.ac.uk/consortium/'.$consortium->{ID}.'>
+<http://id.learning-provider.data.ac.uk/group/'.$group->{ID}.'>
 	a foaf:Organization ;
-	rdfs:label "'.ttl_esc( $consortium->{"Group Name"} ).'" ;
-	owl:sameAs <'.$consortium->{DBPEDIA_URI}.'> ;
-	foaf:isPrimaryTopicOf <'.$consortium->{Wikipedia}.'> ;
+	rdfs:label "'.ttl_esc( $group->{"Group Name"} ).'" ;
+	owl:sameAs <'.$group->{DBPEDIA_URI}.'> ;
+	foaf:isPrimaryTopicOf <'.$group->{Wikipedia}.'> ;
 ';
-	foreach my $member ( values %{$consortium->{MEMBERS_HASH}} )
+	foreach my $member ( values %{$group->{MEMBERS_HASH}} )
 	{
 		$ttl .= '	foaf:member <http://id.learning-provider.data.ac.uk/ukprn/'.$member->{UKPRN}.'> ;
 ';
 	}
-	$ttl .= '	foaf:homepage <'.$consortium->{Homepage}.'> .
+	$ttl .= '	foaf:homepage <'.$group->{Homepage}.'> .
 ';
-	foreach my $member ( values %{$consortium->{MEMBERS_HASH}} )
+	foreach my $member ( values %{$group->{MEMBERS_HASH}} )
 	{
 		$ttl .= '
 <http://id.learning-provider.data.ac.uk/ukprn/'.$member->{UKPRN}.'>
@@ -362,7 +368,7 @@ sub learning_provider_ttl_headers
 
 sub learning_provider_ttl
 {
-	my( $lp, $consortia_data ) = @_;
+	my( $lp, $groups_data ) = @_;
 
 	my @locality = ();
 	push @locality, $lp->{LOCALITY} if $lp->{LOCALITY} ne "";
@@ -398,7 +404,6 @@ sub learning_provider_ttl
 	a vcard:Address ;
 	vcard:postal-code "'.$lp->{PRIMARY_CONTACT_POSTCODE}.'" .
 ';
-
 	return $ttl;
 }
 
@@ -406,31 +411,45 @@ sub learning_provider_plus_ttl_headers
 {
 	return learning_provider_ttl_headers().'
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix spatialrelations: <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 ';
 }
 sub learning_provider_plus_ttl
 {
-	my( $lp, $consortia_data ) = @_;
+	my( $lp, $groups_data ) = @_;
 
-	my $ttl = learning_provider_ttl( $lp, $consortia_data );
+	my $ttl = learning_provider_ttl( $lp, $groups_data );
 	$ttl.='
 <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>
 	foaf:isPrimaryTopicOf <'.$lp->{WIKIPEDIA_URL}.'> ;
 	owl:sameAs <'.$lp->{DBPEDIA_URI}.'> .
 ';
-	foreach my $consortia_id ( @{$lp->{CONSORTIA_LIST}} )
+	foreach my $groups_id ( @{$lp->{GROUPS_LIST}} )
 	{
-		my $consortium = $consortia_data->{$consortia_id};
+		my $group = $groups_data->{$groups_id};
 		$ttl .='
-<http://id.learning-provider.data.ac.uk/consortium/'.$consortium->{ID}.'>
+<http://id.learning-provider.data.ac.uk/group/'.$group->{ID}.'>
 	a foaf:Organization ;
-	rdfs:label "'.ttl_esc( $consortium->{"Group Name"} ).'" ;
-	owl:sameAs <'.$consortium->{DBPEDIA_URI}.'> ;
-	foaf:homepage <'.$consortium->{Homepage}.'> ;
-	foaf:isPrimaryTopicOf <'.$consortium->{Wikipedia}.'> ;
+	rdfs:label "'.ttl_esc( $group->{"Group Name"} ).'" ;
+	owl:sameAs <'.$group->{DBPEDIA_URI}.'> ;
+	foaf:homepage <'.$group->{Homepage}.'> ;
+	foaf:isPrimaryTopicOf <'.$group->{Wikipedia}.'> ;
 	foaf:member <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'> .
 ';
 	}
+	if( defined $lp->{LATITUDE} )
+	{
+		$ttl .='
+<http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{POSTCODE} ).'> 
+	spatialrelations:easting "'.$lp->{EASTING}.'"^^xsd:integer ;
+	spatialrelations:northing "'.$lp->{NORTHING}.'"^^xsd:integer ;
+	geo:lat "'.$lp->{LATITUDE}.'"^^xsd:decimal ;
+	geo:long "'.$lp->{LONGITUDE}.'"^^xsd:decimal .
+';
+	}
+
 	return $ttl;
 }
 
@@ -449,7 +468,7 @@ sub ttl_esc
 {
 	my( $text ) = @_;
 
-	$text =~ s/(["\\'])/\\$1/g;
+	$text =~ s/(["\\])/\\$1/g;
 	
 	return $text;
 }
@@ -530,7 +549,7 @@ C_N8_Research_Partnership
 <http://id.learning-provider.data.ac.uk/ukprn/XXX>
 	foaf:isPrimaryTopicOf <WIKIPEDIA> ;
 	owl:sameAs <DBPEDIA> .
-<http://id.learning-provider.data.ac.uk/consortium/XXXXX>
+<http://id.learning-provider.data.ac.uk/group/XXXXX>
 	a foaf:Organization ;
 	rdfs:label "XXXX" ;
 	owl:sameAs <DBPEDIA> ;
@@ -540,3 +559,4 @@ C_N8_Research_Partnership
 
 	
 
+#POSTCODE        EASTING NORTHING        LATITUDE        LONGITUDE

@@ -1,0 +1,116 @@
+</div>
+<div class='ten columns'>
+
+<h2>Data Download</h2>
+
+<h3>Tab separated values (TSV)</h3>
+<p>Tabular data. You can load these files into Excel or other spreadsheets.</p>
+<table>
+
+<tr>
+ <td style='width:40px'><a href='/data/learning-providers-plus.tsv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/learning-providers-plus.tsv'>Learning Providers (augmented)</a></strong> - 20K
+<br />
+This TSV document only the data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>, but has been augmented by additional (non-authoritative) data created by the webmaster of this site; such as wikipedia page and what groups and consorita they are members of.
+</td>
+</tr>
+
+<tr>
+ <td><a href='/data/learning-providers.tsv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/learning-providers.tsv'>Learning Providers (basic)</a></strong> - 17K
+<br />
+This TSV document only contains data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>. It should be considered as being from an authoritative source.
+</td>
+</tr>
+
+<tr>
+ <td><a href='/data/groups.tsv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/groups.tsv'>Groups</a></strong> - 1K
+<br />
+List of groups and consortia (eg. Russell Group). Does not contain membership information (get can get that from the augmented learning-providers download)
+</td>
+</tr>
+
+</table>
+
+
+<h3>RDF Data</h3>
+<p>All these are in the "<a href='http://www.w3.org/TeamSubmission/turtle/'>Turtle</a>" RDF format.</p>
+
+<table>
+<tr>
+ <td style='width:40px;'><a href='data/learning-providers-plus.ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='data/learning-providers-plus.ttl'>Learning Providers (augmented)</a></strong> - 252K
+<br />
+(If you want ALL the data from this site, this is the document).
+RDF Descriptions of all the learning providers data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>, and augmented by additional (non-authoritative) data created by the webmaster of this site; such as wikipedia page and what groups and consorita they are members of.
+</td>
+</tr>
+<tr>
+ <td style='width:40px;'><a href='data/learning-providers.ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='data/learning-providers.ttl'>Learning Providers (basic)</a></strong> - 180K
+<br />
+RDF Descriptions of university data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>. It should be considered as being from an authoritative source.
+</td>
+</tr>
+<tr>
+ <td style='width:40px;'><a href='data/groups.ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='data/groups.ttl'>University Groups and Consortia</a></strong> - 26K
+<br />
+RDF Descriptions of groups and consortia (eg. Russell Group), including name and website of members.
+</td>
+</tr>
+<tr>
+ <td style='width:40px;'><a href='data/dbpedia-linkset.ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='data/dbpedia-linkset.ttl'>Linkset to DBPedia</a></strong> - 22K
+<br />
+RDF Turtle containing just a list of owl:sameAs startments connection the URIs for learning providers and consortia to the DBPedia URI for them.
+</td>
+</tr>
+
+ 
+</table>
+</div>
+
+
+<div class="six columns">
+
+<h3>Browse</h3>
+
+<ul class='bullets'>
+<li style='margin-bottom:1em'><a href="/all.html">Full list of UK Universities</a></li>
+<li><a href="/group/1994_Group.html">1994 Group</a></li>
+<li><a href="/group/Million_Plus.html">Million+</a></li>
+<li><a href="/group/N8_Research_Partnership.html">N8 Research Partnership</a></li>
+<li><a href="/group/NCUK.html">NCUK</a></li>
+<li><a href="/group/Russell_Group.html">Russell Group</a></li>
+<li><a href="/group/University_Alliance.html">University Alliance</a></li>
+<li><a href="/group/White_Rose_University_Consortium.html">White Rose University Consortium</a></li>
+</ul>
+
+<h3>License</h3>
+
+<p>We are still waiting for final confirmation of the license for the data from UKRLP.</p>
+<p>The data on consortium/groups and linkset to dbpedia are <a href='http://creativecommons.org/publicdomain/zero/1.0/'>CC0</a>, you may use them for any purpose (but a credit is still nice, if possible).</p>
+<p>The data on the locations of postcodes is taken from <a href="http://data.ordnancesurvey.co.uk/">http://data.ordnancesurvey.co.uk/</a> and is subject to their license.</p>
+
+<h3>Corrections</h3>
+
+<p>The core data of University IDs, names, homepages and addresses are supplied periodically from <a href='http://www.ukrlp.co.uk/'>UK Register of Learning Providers</a>.</p>
+<p>The mappingconsortium/group and dbpedia identifiers is maintained by the learning-providers.data.ac.uk webmaster (currently <a href="http://users.ecs.soton.ac.uk/cjg">Christopher Gutteridge</a>).</p>
+<p>The postcode geo locations are from <a href="http://data.ordnancesurvey.co.uk/">http://data.ordnancesurvey.co.uk/</a>.</p>
+<p>If the data here is incorrect or out of date, please <a href='mailto:cjg@ecs.soton.ac.uk'>Let us know</a>.</p>
+
+</div>
+
+<div class="sixteen columns">
+
+<!--
+<h3>RDF Documentation</h3>
+<p>Data is available to download as RDF dumps, described above, also individual records for universities and groups/consortia are available as RDF-Turtle files.</p>
+
+<h4>Example URIs</h4>
+
+<dl>
+<dt>http://id.learning-provider.data.ac.uk/
+-->

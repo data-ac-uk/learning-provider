@@ -1,0 +1,11 @@
+<p>This site provides open linked data about UK Learning Providers. Initially the only data available is for Universities but this map be expanded in time.</p>
+<p>We use learning-provider rather than "institution" or "university" as the codes we are using to uniquely identify universities are <a href="http://www.ukrlp.co.uk/">"UK Learning Provider Reference Numbers" (UKPRN)</a>. We only (currently) resolve URIs for universities, but we may expand the service to include data on all learning providers in the future, but no promises.</p>
+
+<h3>Quick Search</h3>
+<script src='/resources/jquery.min.js' ></script>
+<input id='regexp' onKeyUp='dofilter()' style='text-align:left;width:90%;font-size:140%;padding:0.1em;border:solid 1px #000' />
+<script>
+$(document).ready(function() {
+    $('#regexp').focus();
+});
+</script>

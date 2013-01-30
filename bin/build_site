@@ -65,9 +65,9 @@ foreach my $groups_id ( keys %$groups_data )
 # Output Data
 ############################################################
 
-# learning-provider csv raw 
-output_tsv_file( 
-	$data_path."/learning-providers.tsv",
+# learning-provider csv & tsv raw 
+output_tabular_files( 
+	$data_path."/learning-providers",
 	$ukprn_data,
 	[qw/
             UKPRN
@@ -95,16 +95,16 @@ my $lp_plus_fields = [qw/
             POSTCODE
             WEBSITE_URL
             PRIMARY_CONTACT_POSTCODE
-            WIKIPEDIA
+            WIKIPEDIA_URL
             GROUPS
             LONGITUDE
             LATITUDE
             EASTING
             NORTHING
 	/];
-# learning-provider tsv cooked 
-output_tsv_file( 
-	$data_path."/learning-providers-plus.tsv",
+# learning-provider tsv & csv (cooked)
+output_tabular_files( 
+	$data_path."/learning-providers-plus",
 	$ukprn_data,
 	$lp_plus_fields );
 
@@ -136,9 +136,9 @@ output_tsv_file(
 	close $fh;
 }
 
-# groups tsv
-output_tsv_file( 
-	$data_path."/groups.tsv",
+# groups tsv & csv
+output_tabular_files ( 
+	$data_path."/groups",
 	$groups_data,
 	[
 	    "ID",
@@ -210,8 +210,8 @@ output_tsv_file(
 		print $fh group_ttl( $group, $ukprn_data );
 		close $fh;
 
-		output_tsv_file( 
-			$groups_data_path."/".$group->{ID}.".tsv",
+		output_tabular_files( 
+			$groups_data_path."/".$group->{ID},
 			$group->{MEMBERS_HASH},
 			$lp_plus_fields );
 	}
@@ -293,26 +293,35 @@ sub load_csv_file
 	return $data;
 }
 
-sub output_tsv_file
+sub output_tabular_files
 {
 	my( $file, $data, $fields ) = @_;
 
-	my $fh;
-	open( $fh, ">:utf8", $file ) ||
-		die "Failed to write file '$file': $!";
-	print $fh join( "\t", @$fields )."\n";
+	my $fh_tsv;
+	my $fh_csv;
+	open( $fh_tsv, ">:utf8", $file.".tsv" ) ||
+		die "Failed to write file '$file.tsv': $!";
+	open( $fh_csv, ">:utf8", $file.".csv" ) ||
+		die "Failed to write file '$file.csv': $!";
+	print $fh_tsv join( "\t", @$fields )."\n";
+	print $fh_csv "\"".join( "\",\"", @$fields )."\"\n";
 	foreach my $row ( values %$data )
 	{
-		my @output;
+		my @output_tsv;
+		my @output_csv;
 		foreach my $field ( @$fields )
 		{
 			my $v = $row->{$field};
 			$v = "" if !defined $v;
-			push @output, $v;
+			push @output_tsv, $v;
+			$v =~ s/"/""/g;
+			push @output_csv, $v;
 		}
-		print $fh join( "\t", @output )."\n";
+		print $fh_tsv join( "\t", @output_tsv )."\n";
+		print $fh_csv "\"".join( "\",\"", @output_csv )."\"\n";
 	}
-	close $fh;
+	close $fh_tsv;
+	close $fh_csv;
 }
 	
 sub group_ttl_headers

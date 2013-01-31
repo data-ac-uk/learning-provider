@@ -175,6 +175,10 @@ $f3->route('GET /group/@file',
  <td><strong><a href='/group/$group.ttl'>".$c_res->label()."</a></strong> - RDF Description (.ttl)</td>
 </tr>
 <tr>
+ <td style='width:40px;'><a href='turtle/$group.csv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/group/$group.csv'>".$c_res->label()."</a></strong> - List of members (.csv)</td>
+</tr>
+<tr>
  <td style='width:40px;'><a href='turtle/$group.tsv'><img src='/resources/images/file.png' /></a></td>
  <td><strong><a href='/group/$group.tsv'>".$c_res->label()."</a></strong> - List of members (.tsv)</td>
 </tr>

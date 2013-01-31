@@ -3,8 +3,8 @@
 
 <h2>Data Download</h2>
 
-<h3>Tab separated values (TSV)</h3>
-<p>Tabular data. You can load these files into Excel or other spreadsheets.</p>
+<h3>Comma-Separated Values (CSV)</h3>
+<p>.csv: Tabular data. This format should load straight into Excel or other spreadsheets.</p>
 <table>
 
 <tr>
@@ -32,6 +32,32 @@ List of groups and consortia (eg. Russell Group). Does not contain membership in
 </tr>
 
 </table>
+
+<h3>Tab separated values (TSV)</h3>
+<p>.tsv: Tabular data. This is the easy for software to consume. Tabs separate each value. Othewise it is identical to the CSV data.</p>
+<table>
+
+<tr>
+ <td style='width:40px'><a href='/data/learning-providers-plus.csv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/learning-providers-plus.csv'>Learning Providers (augmented)</a></strong> - 20K
+</td>
+</tr>
+
+<tr>
+ <td><a href='/data/learning-providers.csv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/learning-providers.csv'>Learning Providers (basic)</a></strong> - 17K
+</td>
+</tr>
+
+<tr>
+ <td><a href='/data/groups.csv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/groups.csv'>Groups</a></strong> - 1K
+</td>
+</tr>
+
+</table>
+
+
 
 
 <h3>RDF Data</h3>

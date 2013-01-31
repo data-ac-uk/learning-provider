@@ -386,6 +386,7 @@ sub learning_provider_ttl
 	push @street, $lp->{FLAT_NAME_NUMBER} if $lp->{FLAT_NAME_NUMBER} ne "";
 	push @street, $lp->{BUILDING_NAME_NUMBER} if $lp->{BUILDING_NAME_NUMBER} ne "";
 	push @street, $lp->{STREET_NAME} if $lp->{STREET_NAME} ne "";
+	my $sameas = "http://www.sameas.org/rdf?uri=".urlencode( 'http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN} );
 
 	my $ttl = '
 <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>
@@ -396,7 +397,8 @@ sub learning_provider_ttl
         oo:primaryContact <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#contact> ;
         ospost:postcode <http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{POSTCODE} ).'> ;
 	vcard:adr <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#address> ;
-	foaf:homepage <'.$lp->{WEBSITE_URL}.'> .
+	foaf:homepage <'.$lp->{WEBSITE_URL}.'> ;
+	rdfs:seeAlso <'.$sameas.'> .
 <http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{POSTCODE} ).'> rdfs:label "'.$lp->{POSTCODE}.'" .
 <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#address>
 	a vcard:Address ;
@@ -480,6 +482,20 @@ sub ttl_esc
 	$text =~ s/(["\\])/\\$1/g;
 	
 	return $text;
+}
+
+sub urlencode {
+    my $s = shift;
+    $s =~ s/([^ A-Za-z0-9\+-])/sprintf("%%%02X", ord($1))/seg;
+    $s =~ s/ /+/g;
+    return $s;
+}
+
+sub urldecode {
+    my $s = shift;
+    $s =~ s/\+/ /g;
+    $s =~ s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+    return $s;
 }
 
 __DATA__

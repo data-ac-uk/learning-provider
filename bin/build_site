@@ -356,7 +356,8 @@ sub group_ttl
 <http://id.learning-provider.data.ac.uk/ukprn/'.$member->{UKPRN}.'>
 	a foaf:Organization ;
 	rdfs:label "'.ttl_esc( $member->{"PROVIDER_NAME"} ).'" ;
-	foaf:homepage <'.$member->{WEBSITE_URL}.'> .
+	foaf:homepage <'.$member->{WEBSITE_URL}.'> ;
+	owl:sameAs <'.$member->{DBPEDIA_URI}.'> .
 ';
 	}
 	return $ttl;
@@ -386,7 +387,7 @@ sub learning_provider_ttl
 	push @street, $lp->{FLAT_NAME_NUMBER} if $lp->{FLAT_NAME_NUMBER} ne "";
 	push @street, $lp->{BUILDING_NAME_NUMBER} if $lp->{BUILDING_NAME_NUMBER} ne "";
 	push @street, $lp->{STREET_NAME} if $lp->{STREET_NAME} ne "";
-	my $sameas = "http://www.sameas.org/rdf?uri=".urlencode( 'http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN} );
+	my $sameas_org = "http://www.sameas.org/rdf?uri=".urlencode( 'http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN} );
 
 	my $ttl = '
 <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>
@@ -398,7 +399,7 @@ sub learning_provider_ttl
         ospost:postcode <http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{POSTCODE} ).'> ;
 	vcard:adr <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#address> ;
 	foaf:homepage <'.$lp->{WEBSITE_URL}.'> ;
-	rdfs:seeAlso <'.$sameas.'> .
+	rdfs:seeAlso <'.$sameas_org.'> .
 <http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{POSTCODE} ).'> rdfs:label "'.$lp->{POSTCODE}.'" .
 <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#address>
 	a vcard:Address ;
@@ -427,6 +428,7 @@ sub learning_provider_plus_ttl_headers
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 ';
 }
+
 sub learning_provider_plus_ttl
 {
 	my( $lp, $groups_data ) = @_;

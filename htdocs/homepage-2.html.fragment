@@ -1,31 +1,31 @@
 </div>
 <div class='ten columns'>
-
 <h2>Data Download</h2>
 
 <h3>Comma-Separated Values (CSV)</h3>
 <p>.csv: Tabular data. This format should load straight into Excel or other spreadsheets.</p>
+
 <table>
 
 <tr>
- <td style='width:40px'><a href='/data/learning-providers-plus.tsv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/learning-providers-plus.tsv'>Learning Providers (augmented)</a></strong> - 20K
+ <td style='width:40px'><a href='/data/learning-providers-plus.csv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/learning-providers-plus.csv'>Learning Providers (augmented)</a></strong> - 20K
 <br />
-This TSV document only the data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>, but has been augmented by additional (non-authoritative) data created by the webmaster of this site; such as wikipedia page and what groups and consorita they are members of.
+This CSV document only the data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>, but has been augmented by additional (non-authoritative) data created by the webmaster of this site; such as wikipedia page and what groups and consorita they are members of.
 </td>
 </tr>
 
 <tr>
- <td><a href='/data/learning-providers.tsv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/learning-providers.tsv'>Learning Providers (basic)</a></strong> - 17K
+ <td><a href='/data/learning-providers.csv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/learning-providers.csv'>Learning Providers (basic)</a></strong> - 17K
 <br />
-This TSV document only contains data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>. It should be considered as being from an authoritative source.
+This CSV document only contains data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>. It should be considered as being from an authoritative source.
 </td>
 </tr>
 
 <tr>
- <td><a href='/data/groups.tsv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/groups.tsv'>Groups</a></strong> - 1K
+ <td><a href='/data/groups.csv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/groups.csv'>Groups</a></strong> - 1K
 <br />
 List of groups and consortia (eg. Russell Group). Does not contain membership information (get can get that from the augmented learning-providers download)
 </td>
@@ -34,28 +34,30 @@ List of groups and consortia (eg. Russell Group). Does not contain membership in
 </table>
 
 <h3>Tab separated values (TSV)</h3>
-<p>.tsv: Tabular data. This is the easy for software to consume. Tabs separate each value. Othewise it is identical to the CSV data.</p>
+<p>.tsv: Tabular data. This is more easy for software to consume. One record per line, and tab characters separate each value. Othewise it is identical to the CSV data.</p>
 <table>
 
 <tr>
- <td style='width:40px'><a href='/data/learning-providers-plus.csv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/learning-providers-plus.csv'>Learning Providers (augmented)</a></strong> - 20K
+ <td style='width:40px'><a href='/data/learning-providers-plus.tsv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/learning-providers-plus.tsv'>Learning Providers (augmented)</a></strong> - 20K
 </td>
 </tr>
 
 <tr>
- <td><a href='/data/learning-providers.csv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/learning-providers.csv'>Learning Providers (basic)</a></strong> - 17K
+ <td><a href='/data/learning-providers.tsv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/learning-providers.tsv'>Learning Providers (basic)</a></strong> - 17K
 </td>
 </tr>
 
 <tr>
- <td><a href='/data/groups.csv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/groups.csv'>Groups</a></strong> - 1K
+ <td><a href='/data/groups.tsv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='/data/groups.tsv'>Groups</a></strong> - 1K
 </td>
 </tr>
 
 </table>
+
+
 
 
 

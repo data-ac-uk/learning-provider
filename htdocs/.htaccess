@@ -6,3 +6,4 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule .* index.php [L,QSA]
 AddType text/turtle .ttl
 AddType application/rdf+xml .rdf
+AddType text/csv .csv

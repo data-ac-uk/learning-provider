@@ -71,7 +71,17 @@ $f3->route('GET /ukprn/@file',
 		$content .= "".$lp->get("ospost:postcode")->prettyLink();
 		$content .= "</addr></p>\n";
 
-		$content .= "<p><strong>UKPRN:</strong> ".$lp->getLiteral( "skos:notation" )."</p>\n";
+		foreach( $lp->all( "skos:notation" ) as $notation )
+		{
+			if( $notation->datatype() == "http://id.learning-provider.data.ac.uk/ns/UKPRNSchemeDatatype" )
+			{
+				$content .= "<p><strong><abbr title='UK Register of Learning Providers ID'>UKPRN</abbr>:</strong> $notation</p>\n";
+			}
+			if( $notation->datatype() == "http://id.learning-provider.data.ac.uk/ns/GTRIdSchemeDatatype" )
+			{
+				$content .= "<p><strong><abbr title='Gateway to Research'>GTR</abbr> ID:</strong> <a href='http://gtr.rcuk.ac.uk/organisation/$notation'>$notation</a></p>\n";
+			}
+		}
 		$content .= "<p><strong>Homepage:</strong> ".$lp->get( "foaf:homepage" )->link()."</p>\n";
 
 		# lazy, assumes only one isPrimaryTopicOf

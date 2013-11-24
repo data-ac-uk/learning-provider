@@ -40,6 +40,11 @@ foreach my $ukprn ( keys %$groups_map_data )
 	$ukprn_data->{$ukprn}->{WIKIPEDIA_URL} = $wikipedia;
 	$ukprn_data->{$ukprn}->{DBPEDIA_URI} = "http://dbpedia.org/resource/".
 		substr( $wikipedia, length( 'http://en.wikipedia.org/wiki/' ) );
+	if( $groups_map_data->{$ukprn}->{GTR_ID} )
+	{
+		$ukprn_data->{$ukprn}->{GTR_URI} = "http://gtr.rcuk.ac.uk:80/organisation/".$groups_map_data->{$ukprn}->{GTR_ID};
+		$ukprn_data->{$ukprn}->{GTR_ID} = $groups_map_data->{$ukprn}->{GTR_ID};
+	}
 	my @groups = ();
 	foreach my $c_id ( keys %{$groups_map_data->{$ukprn}} )
 	{
@@ -101,6 +106,7 @@ my $lp_plus_fields = [qw/
             LATITUDE
             EASTING
             NORTHING
+            GTR_ID
 	/];
 # learning-provider tsv & csv (cooked)
 output_tabular_files( 
@@ -180,6 +186,25 @@ output_tabular_files (
 	{
 		print $fh '<http://id.learning-provider.data.ac.uk/group/'.$group->{ID}.'> owl:sameAs <'.$group->{DBPEDIA_URI}.'> .
 ';
+	}
+	close $fh;
+}
+
+# gtr linkset ttl
+{
+	my $file = $data_path."/gtr-linkset.ttl";
+	my $fh;
+	open( $fh, ">:utf8", $file ) ||
+		die "Failed to write file '$file': $!";
+	print $fh '@prefix owl: <http://www.w3.org/2002/07/owl#> .
+';
+	foreach my $lp ( values %$ukprn_data )
+	{
+		if( $lp->{GTR_URI} )
+		{
+			print $fh '<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'> owl:sameAs <'.$lp->{GTR_URI}.'> .
+';
+		}
 	}
 	close $fh;
 }
@@ -352,12 +377,18 @@ sub group_ttl
 ';
 	foreach my $member ( values %{$group->{MEMBERS_HASH}} )
 	{
+	
+		my @same_as = ( $member->{DBPEDIA_URI} );
+		if( $member->{GTR_URI} )
+		{
+			push @same_as, $member->{GTR_URI};
+		}	
 		$ttl .= '
 <http://id.learning-provider.data.ac.uk/ukprn/'.$member->{UKPRN}.'>
 	a foaf:Organization ;
 	rdfs:label "'.ttl_esc( $member->{"PROVIDER_NAME"} ).'" ;
-	foaf:homepage <'.$member->{WEBSITE_URL}.'> ;
-	owl:sameAs <'.$member->{DBPEDIA_URI}.'> .
+	foaf:homepage <'.$member->{WEBSITE_URL}.'> ; 
+	owl:sameAs <'.join( ">, <", @same_as ).'> .
 ';
 	}
 	return $ttl;
@@ -433,12 +464,24 @@ sub learning_provider_plus_ttl
 {
 	my( $lp, $groups_data ) = @_;
 
+	my @same_as = ( $lp->{DBPEDIA_URI} );
+	if( $lp->{GTR_URI} )
+	{
+		push @same_as, $lp->{GTR_URI};
+	}	
 	my $ttl = learning_provider_ttl( $lp, $groups_data );
 	$ttl.='
-<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>
+<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>';
+	if( $lp->{GTR_ID} )
+	{
+		$ttl.='
+	skos:notation "'.$lp->{GTR_ID}.'"^^<http://id.learning-provider.data.ac.uk/ns/GTRIdSchemeDatatype> ;';
+	}
+	$ttl .='
 	foaf:isPrimaryTopicOf <'.$lp->{WIKIPEDIA_URL}.'> ;
-	owl:sameAs <'.$lp->{DBPEDIA_URI}.'> .
+	owl:sameAs <'.join( ">, <", @same_as ).'> .
 ';
+	
 	foreach my $groups_id ( @{$lp->{GROUPS_LIST}} )
 	{
 		my $group = $groups_data->{$groups_id};

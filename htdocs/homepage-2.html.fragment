@@ -88,6 +88,7 @@ RDF Descriptions of university data supplied from <a href="http://www.ukrlp.co.u
 RDF Descriptions of groups and consortia (eg. Russell Group), including name and website of members.
 </td>
 </tr>
+
 <tr>
  <td style='width:40px;'><a href='data/dbpedia-linkset.ttl'><img src='/resources/images/file.png' /></a></td>
  <td><strong><a href='data/dbpedia-linkset.ttl'>Linkset to DBPedia</a></strong> - 22K
@@ -96,6 +97,13 @@ RDF Turtle containing just a list of owl:sameAs startments connection the URIs f
 </td>
 </tr>
 
+<tr>
+ <td style='width:40px;'><a href='data/gtr-linkset.ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='data/gtr-linkset.ttl'>Linkset to "Gateway to Research" URIs</a></strong> - 22K
+<br />
+RDF Turtle containing just a list of owl:sameAs startments connection the URIs for learning providers to the <a href='http://gtr.rcuk.ac.uk/'>Gateway to Research</a> URI for that organsation, where available.
+</td>
+</tr>
  
 </table>
 </div>
@@ -119,7 +127,7 @@ RDF Turtle containing just a list of owl:sameAs startments connection the URIs f
 <h3>License</h3>
 
 <p>We are still waiting for final confirmation of the license for the data from UKRLP.</p>
-<p>The data on consortium/groups and linkset to dbpedia are <a href='http://creativecommons.org/publicdomain/zero/1.0/'>CC0</a>, you may use them for any purpose (but a credit is still nice, if possible).</p>
+<p>The data on consortium/groups and linkset to <a href='http://dbpedia.org/'>DBPedia</a> and <a href='http://gtr.rcuk.ac.uk/'>Gateway to Research</a> are <a href='http://creativecommons.org/publicdomain/zero/1.0/'>CC0</a>, you may use them for any purpose (but a credit is still nice, if possible).</p>
 <p>The data on the locations of postcodes is taken from <a href="http://data.ordnancesurvey.co.uk/">http://data.ordnancesurvey.co.uk/</a> and is subject to their license.</p>
 
 <h3>Corrections</h3>

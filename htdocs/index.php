@@ -71,6 +71,7 @@ $f3->route('GET /ukprn/@file',
 		$content .= "".$lp->get("ospost:postcode")->prettyLink();
 		$content .= "</addr></p>\n";
 
+		$gtr = false;
 		foreach( $lp->all( "skos:notation" ) as $notation )
 		{
 			if( $notation->datatype() == "http://id.learning-provider.data.ac.uk/ns/UKPRNSchemeDatatype" )
@@ -79,6 +80,7 @@ $f3->route('GET /ukprn/@file',
 			}
 			if( $notation->datatype() == "http://id.learning-provider.data.ac.uk/ns/GTRIdSchemeDatatype" )
 			{
+				$gtr = "$notation";
 				$content .= "<p><strong><abbr title='Gateway to Research'>GTR</abbr> ID:</strong> <a href='http://gtr.rcuk.ac.uk/organisation/$notation'>$notation</a></p>\n";
 			}
 		}
@@ -136,7 +138,40 @@ map.setCenter( lonLat, zoom );
 			$content .= "</div>";
 			$content .= "<div class='sixteen columns'>";
 }
+		if( $gtr )
+		{
+$content .= "
+<h3>Sample Projects</h3>
+<p>This data is pulled in from the RCUK <a href='http://gtr.rcuk.ac.uk'>Gateway to Research</a> API.</p>
+<div id='gtr'>Loading...</div>
 
+<script src='/resources/jquery.min.js' ></script>
+<script>
+$.getJSON( '/gtr-proxy.php?id=$gtr')
+  .done( function( data ) {
+    var items = [];
+    $('#gtr').html( '' );
+    $.each( data.project, function( key, project ) { 
+      var div = $('<div></div>');
+      var link = $('<a href=\'http://gtr.rcuk.ac.uk/project/'+project.id+'\'></a>');
+      var h4 = $('<h4></h4>');
+      var p = $('<p></p>');
+      div.append( h4 );
+      div.append( p );
+      h4.append( link );
+      link.append( document.createTextNode( project.title ) );
+      p.append( document.createTextNode( project.abstractText ) );
+      $('#gtr').append( div );
+    } ) 
+  } )
+  .fail( function( jqxhr, textStatus, error ) { 
+    var err = textStatus + ', ' + error;   
+    alert( 'err: '+err );
+  } )
+;
+</script>
+";
+		}
 		print render_page( $lp->label()." - Learning Provider", $content );
 
 	}

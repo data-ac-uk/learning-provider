@@ -160,7 +160,14 @@ $.getJSON( '/gtr-proxy.php?id=$gtr')
       div.append( p );
       h4.append( link );
       link.append( document.createTextNode( project.title ) );
-      p.append( document.createTextNode( project.abstractText ) );
+      if( project.abstractText == null )
+      {
+        p.append( document.createTextNode( 'No abstract available.' ) );
+      }
+      else
+      {
+        p.append( document.createTextNode( project.abstractText ) );
+      }
       $('#gtr').append( div );
     } ) 
   } )

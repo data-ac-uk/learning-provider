@@ -524,6 +524,7 @@ sub ttl_esc
 {
 	my( $text ) = @_;
 
+	return if( !defined $text );
 	$text =~ s/(["\\])/\\$1/g;
 	
 	return $text;

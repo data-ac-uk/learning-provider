@@ -206,18 +206,23 @@ $f3->route('GET /group/@file',
 		$graph = new Graphite();
 		$graph->ns( "ospost", "http://data.ordnancesurvey.co.uk/ontology/postcode/" );
 		$graph->ns( "vcard", "http://www.w3.org/2006/vcard/ns#" );
-		$graph->load( $file );
+		$n =$graph->load( $file );
 		$uri = "http://id.learning-provider.data.ac.uk/group/$group";
 		$c_res = $graph->resource( $uri );
 		$content = "";
 		
 		$content .= "</div><div class='ten columns'>";
 		$content .= "<p><strong>URI:</strong> $uri</p>\n";
-
-		$content .= "<p><strong>Homepage:</strong> ".$c_res->get( "foaf:homepage" )->link()."</p>\n";
+		if( $c_res->has( "foaf:homepage" ) )
+		{
+			$content .= "<p><strong>Homepage:</strong> ".$c_res->get( "foaf:homepage" )->link()."</p>\n";
+		}
 
 		# lazy, assumes only one isPrimaryTopicOf
-		$content .= "<p><strong>Wikipedia:</strong> ".$c_res->get( "foaf:isPrimaryTopicOf" )->link()."</p>\n";
+		if( $c_res->has( "foaf:isPrimaryTopicOf" ) )
+		{
+			$content .= "<p><strong>Wikipedia:</strong> ".$c_res->get( "foaf:isPrimaryTopicOf" )->link()."</p>\n";
+		}
 		$content .= "</div><div class='six columns'>";
 		$content .= "
 <h3>Data</h3>
@@ -274,7 +279,23 @@ $f3->route('GET /all.html',
 	}
 );
 		
-
+$f3->route( "GET /terms",
+	function() use($f3) {
+		$graph = new Graphite();
+		$graph->ns( "lprov", "http://id.learning-provider.data.ac.uk/terms#" );
+		$graph->resource( "lprov:UKUniversity" )
+			->add( "rdf:type", "rdfs:Class" )
+			->add( "rdfs:label", "UK University", "literal" )
+		;
+		$graph->resource( "lprov:InstitutionalGroup" )
+			->add( "rdf:type", "rdfs:Class" )
+			->add( "rdfs:label", "Institutional Group", "literal" )
+			->add( "rdfs:comment", "An organisation where some or all of the members are academic institutions.", "literal" )
+		;
+		header( "Content-type: text/turtle" );
+		print $graph->serialize( "Turtle" );
+	}
+);
 
 $f3->run();
 exit;

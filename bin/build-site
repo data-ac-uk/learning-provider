@@ -24,6 +24,8 @@ my $postcode_data = load_csv_file( "$var_path/postcodes/postcodes.csv", "POSTCOD
 
 foreach my $ukprn ( keys %$ukprn_data )
 {
+	next if( !defined $ukprn_data->{$ukprn} ); # skip ones which no longer exist
+
 	$ukprn_data->{$ukprn}->{WEBSITE_URL} = "http://".$ukprn_data->{$ukprn}->{WEBSITE_ADDRESS} ."/";
 	my $pcdata = $postcode_data->{ dewhitespace( $ukprn_data->{$ukprn}->{POSTCODE} ) };
 	if( defined $pcdata )
@@ -36,6 +38,8 @@ foreach my $ukprn ( keys %$ukprn_data )
 }
 foreach my $ukprn ( keys %$groups_map_data )
 {
+	next if( !defined $ukprn_data->{$ukprn} ); # skip ones which no longer exist
+
 	my $wikipedia = $groups_map_data->{$ukprn}->{Wikipedia};
 	$ukprn_data->{$ukprn}->{WIKIPEDIA_URL} = $wikipedia;
 	$ukprn_data->{$ukprn}->{DBPEDIA_URI} = "http://dbpedia.org/resource/".
@@ -85,7 +89,6 @@ output_tabular_files(
             TOWN
             POSTCODE
             WEBSITE_ADDRESS
-            PRIMARY_CONTACT_POSTCODE
 	/] );
 
 my $lp_plus_fields = [qw/
@@ -99,7 +102,6 @@ my $lp_plus_fields = [qw/
             TOWN
             POSTCODE
             WEBSITE_URL
-            PRIMARY_CONTACT_POSTCODE
             WIKIPEDIA_URL
             GROUPS
             LONGITUDE
@@ -179,8 +181,11 @@ output_tabular_files (
 ';
 	foreach my $lp ( values %$ukprn_data )
 	{
-		print $fh '<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'> owl:sameAs <'.$lp->{DBPEDIA_URI}.'> .
+		if( defined $lp->{DBPEDIA_URI} )
+		{
+			print $fh '<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'> owl:sameAs <'.$lp->{DBPEDIA_URI}.'> .
 ';
+		}
 	}
 	foreach my $group ( values %$groups_data )
 	{
@@ -250,6 +255,10 @@ output_tabular_files (
 	open( $fh, ">:utf8", $file ) ||
 		die "Failed to write file '$file': $!";
 
+	foreach my $lp ( values %$ukprn_data )
+	{
+		if( !defined $lp->{PROVIDER_NAME} ) { print Dumper( $lp ); exit; }
+	}
 	print $fh "<div style='margin-top:1em;width:99\%' id='filterList'>\n";
 	foreach my $lp ( sort { $a->{PROVIDER_NAME} cmp $b->{PROVIDER_NAME} } values %$ukprn_data )
 	{
@@ -422,7 +431,6 @@ sub learning_provider_ttl
 	push @street, $lp->{BUILDING_NAME_NUMBER} if $lp->{BUILDING_NAME_NUMBER} ne "";
 	push @street, $lp->{STREET_NAME} if $lp->{STREET_NAME} ne "";
 	my $sameas_org = "http://www.sameas.org/rdf?uri=".urlencode( 'http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN} );
-
 	my $ttl = '
 <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>
 	a foaf:Organization , aiiso:Institution , lprov:UKUniversity ;
@@ -440,14 +448,6 @@ sub learning_provider_ttl
 	vcard:country-name "United Kingdom" ;
         vcard:street-address "'.join( ", ", @street ).'" ;
         vcard:locality "'.join( ", ", @locality ).'" .
-<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#contact> 
-	a foaf:Agent ;
-	vcard:adr <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#contact-address> ;
-        ospost:postcode <http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{PRIMARY_CONTACT_POSTCODE} ).'> .
-<http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{PRIMARY_CONTACT_POSTCODE} ).'> rdfs:label "'.$lp->{PRIMARY_CONTACT_POSTCODE}.'" .
-<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#contact-address>
-	a vcard:Address ;
-	vcard:postal-code "'.$lp->{PRIMARY_CONTACT_POSTCODE}.'" .
 ';
 	return $ttl;
 }
@@ -479,10 +479,17 @@ sub learning_provider_plus_ttl
 		$ttl.='
 	skos:notation "'.$lp->{GTR_ID}.'"^^<http://id.learning-provider.data.ac.uk/ns/GTRIdSchemeDatatype> ;';
 	}
-	$ttl .='
+	if( defined $lp->{WIKIPEDIA_URL} )
+	{
+		$ttl .='
 	foaf:isPrimaryTopicOf <'.$lp->{WIKIPEDIA_URL}.'> ;
 	owl:sameAs <'.join( ">, <", @same_as ).'> .
 ';
+	}
+	else
+	{
+		print STDERR $lp->{PROVIDER_NAME}." (".$lp->{UKPRN}.") has no WIKIPEDIA_URL\n";
+	}
 	
 	foreach my $groups_id ( @{$lp->{GROUPS_LIST}} )
 	{

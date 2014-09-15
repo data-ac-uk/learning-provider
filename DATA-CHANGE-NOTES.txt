@@ -1,0 +1,14 @@
+
+*** 2014-09-15
+
+'10004206' => 'COLLEGE OF ST. MARK AND ST. JOHN FOUNDATION (THE)
+-- has become 10037449 - UNIVERSITY OF ST MARK & ST JOHN
+
+'10007853' => 'UNIVERSITY OF WALES, NEWPORT',
+-- gone (merged into uni of southwales)
+
+'10002901' => 'HARPER ADAMS UNIVERSITY COLLEGE'
+-- has become 10040812 # HARPER ADAMS UNIVERSITY 
+
+10007793 => University of glamorgan 
+-- has become uni of southwales and kept UKPRN

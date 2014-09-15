@@ -1,0 +1,58 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use FindBin;
+use Data::Dumper;
+use lib "$FindBin::Bin/../lib/perl";
+my $BASEDIR = "$FindBin::Bin/..";
+
+my $IDS_FILE = "$BASEDIR/source-data/university-ukprn-list";
+my $BIG_FILE = "$BASEDIR/source-data/UKRLPdata.xls.1.csv";
+my $OUT_FILE = "$BASEDIR/source-data/ukprn.csv";
+
+my $ids = {};
+open( my $ids_fh, "<", $IDS_FILE ) || die "can't read $IDS_FILE";
+while( my $line = readline( $ids_fh ) )
+{
+	chomp $line;
+	my $comment = "-";
+	if( $line =~ m/#\s*(.*)$/ ) { $comment = $1; }
+	$line =~ s/\s*#.*$//;
+	$ids->{$line} = $comment;
+}
+close( $ids_fh );
+
+$ids->{UKPRN} = 1; # so we keep the column headers row
+my @lines = ();
+
+open( my $big_fh, "<", $BIG_FILE ) || die "can't read $BIG_FILE";
+while( my $line = readline( $big_fh ) )
+{
+	$line =~ m/^"([^"]+)"/;
+	my $id = $1;
+	if( defined $ids->{$id} )
+	{
+		push @lines, $line;
+		delete $ids->{$id};
+	}
+}
+close( $big_fh );
+
+if( keys %{$ids} )
+{
+	print STDERR "Error: short list IDs not found in big list:\n".Dumper( $ids );
+	exit 1;
+}
+
+if( scalar @lines < 100 )
+{
+	print STDERR "Error: results only contained ".(scalar @lines)." records. Somthing probably went wrong.\n";
+	exit 1;
+}
+
+# only update list if everything's OK
+open( my $out_fh, ">", $OUT_FILE ) || die "can't read $OUT_FILE";
+print $out_fh join( "", @lines );
+close $out_fh;

@@ -42,8 +42,11 @@ foreach my $ukprn ( keys %$groups_map_data )
 
 	my $wikipedia = $groups_map_data->{$ukprn}->{Wikipedia};
 	$ukprn_data->{$ukprn}->{WIKIPEDIA_URL} = $wikipedia;
-	$ukprn_data->{$ukprn}->{DBPEDIA_URI} = "http://dbpedia.org/resource/".
-		substr( $wikipedia, length( 'http://en.wikipedia.org/wiki/' ) );
+	if( defined $wikipedia )
+	{
+		$ukprn_data->{$ukprn}->{DBPEDIA_URI} = "http://dbpedia.org/resource/".
+			substr( $wikipedia, length( 'http://en.wikipedia.org/wiki/' ) );
+	}
 	if( $groups_map_data->{$ukprn}->{GTR_ID} )
 	{
 		$ukprn_data->{$ukprn}->{GTR_URI} = "http://gtr.rcuk.ac.uk:80/organisation/".$groups_map_data->{$ukprn}->{GTR_ID};
@@ -52,7 +55,7 @@ foreach my $ukprn ( keys %$groups_map_data )
 	my @groups = ();
 	foreach my $c_id ( keys %{$groups_map_data->{$ukprn}} )
 	{
-		if( $groups_map_data->{$ukprn}->{$c_id} ne "" && $c_id =~ s/^C_// )
+		if( defined $groups_map_data->{$ukprn}->{$c_id} && $c_id =~ s/^C_// )
 		{
 			push @groups, $c_id;
 		}
@@ -66,6 +69,7 @@ foreach my $ukprn ( keys %$groups_map_data )
 }
 foreach my $groups_id ( keys %$groups_data )
 {
+	next if( !defined $groups_data->{$groups_id}->{Wikipedia} );
 	$groups_data->{$groups_id}->{DBPEDIA_URI} = "http://dbpedia.org/resource/".
 		substr( $groups_data->{$groups_id}->{Wikipedia}, length( 'http://en.wikipedia.org/wiki/' ) );
 }
@@ -189,6 +193,7 @@ output_tabular_files (
 	}
 	foreach my $group ( values %$groups_data )
 	{
+		next if !defined $group->{DBPEDIA_URI};
 		print $fh '<http://id.learning-provider.data.ac.uk/group/'.$group->{ID}.'> owl:sameAs <'.$group->{DBPEDIA_URI}.'> .
 ';
 	}
@@ -317,6 +322,8 @@ sub load_csv_file
 		my $row_data = {};
 		for my $i (0..($number_of_fields-1) )
 		{
+			next if !defined $row->[$i];
+			next if $row->[$i] eq "";
 			$row_data->{$fields->[$i]} = $row->[$i];
 		}
 		$data->{ $row_data->{$key_field} } = $row_data;
@@ -374,18 +381,26 @@ sub group_ttl
 	my( $group, $ukprn_data ) = @_;
 	my $ttl = '
 <http://id.learning-provider.data.ac.uk/group/'.$group->{ID}.'>
-	a foaf:Organization , lprov:InstitutionalGroup ;
-	rdfs:label "'.ttl_esc( $group->{"Group Name"} ).'" ;
+	a foaf:Organization , lprov:InstitutionalGroup ;';
+	if( $group->{DBPEDIA_URI} )
+	{
+		$ttl .='
 	owl:sameAs <'.$group->{DBPEDIA_URI}.'> ;
-	foaf:isPrimaryTopicOf <'.$group->{Wikipedia}.'> ;
-';
+	foaf:isPrimaryTopicOf <'.$group->{Wikipedia}.'> ;';
+	}
 	foreach my $member ( values %{$group->{MEMBERS_HASH}} )
 	{
 		$ttl .= '	foaf:member <http://id.learning-provider.data.ac.uk/ukprn/'.$member->{UKPRN}.'> ;
 ';
 	}
-	$ttl .= '	foaf:homepage <'.$group->{Homepage}.'> .
+	if( defined $group->{Homepage} )
+	{
+		$ttl .= '	foaf:homepage <'.$group->{Homepage}.'> ;
 ';
+	}
+	$ttl .= '
+	rdfs:label "'.ttl_esc( $group->{"Group Name"} ).'" .';
+
 	foreach my $member ( values %{$group->{MEMBERS_HASH}} )
 	{
 	
@@ -424,12 +439,12 @@ sub learning_provider_ttl
 	my( $lp, $groups_data ) = @_;
 
 	my @locality = ();
-	push @locality, $lp->{LOCALITY} if $lp->{LOCALITY} ne "";
-	push @locality, $lp->{TOWN} if $lp->{TOWN} ne "";
+	push @locality, $lp->{LOCALITY} if defined $lp->{LOCALITY};
+	push @locality, $lp->{TOWN} if defined $lp->{TOWN};
 	my @street = ();
-	push @street, $lp->{FLAT_NAME_NUMBER} if $lp->{FLAT_NAME_NUMBER} ne "";
-	push @street, $lp->{BUILDING_NAME_NUMBER} if $lp->{BUILDING_NAME_NUMBER} ne "";
-	push @street, $lp->{STREET_NAME} if $lp->{STREET_NAME} ne "";
+	push @street, $lp->{FLAT_NAME_NUMBER} if defined $lp->{FLAT_NAME_NUMBER};
+	push @street, $lp->{BUILDING_NAME_NUMBER} if defined $lp->{BUILDING_NAME_NUMBER};
+	push @street, $lp->{STREET_NAME} if defined $lp->{STREET_NAME};
 	my $sameas_org = "http://www.sameas.org/rdf?uri=".urlencode( 'http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN} );
 	my $ttl = '
 <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>
@@ -497,10 +512,23 @@ sub learning_provider_plus_ttl
 		$ttl .='
 <http://id.learning-provider.data.ac.uk/group/'.$group->{ID}.'>
 	a foaf:Organization , lprov:InstitutionalGroup ;
-	rdfs:label "'.ttl_esc( $group->{"Group Name"} ).'" ;
-	owl:sameAs <'.$group->{DBPEDIA_URI}.'> ;
-	foaf:homepage <'.$group->{Homepage}.'> ;
-	foaf:isPrimaryTopicOf <'.$group->{Wikipedia}.'> ;
+	rdfs:label "'.ttl_esc( $group->{"Group Name"} ).'" ;';
+		if( defined $group->{DBPEDIA_URI} )
+		{
+			$ttl .= '
+	owl:sameAs <'.$group->{DBPEDIA_URI}.'> ;';
+		}
+		if( defined $group->{Wikipedia} )
+		{
+			$ttl.='
+	foaf:isPrimaryTopicOf <'.$group->{Wikipedia}.'> ;'
+		}
+		if( defined $group->{Homepage} )
+		{
+			$ttl.='
+	foaf:homepage <'.$group->{Homepage}.'> ;';
+		}
+		$ttl.='
 	foaf:member <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'> .
 ';
 	}

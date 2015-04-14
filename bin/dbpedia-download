@@ -1,0 +1,49 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use FindBin;
+use Data::Dumper;
+use Text::CSV;
+use lib "$FindBin::Bin/../lib/perl";
+my $BASEDIR = "$FindBin::Bin/..";
+
+my $CON_FILE = "$BASEDIR/var/downloads/groups.csv";
+my $UNI_FILE = "$BASEDIR/var/downloads/groups-map.csv";
+my $OUT_DIR = "$BASEDIR/var/dbpedia";
+
+my @urls = ();
+
+my $csv = Text::CSV->new ( { binary => 1 } )  # should set binary attribute.
+        or die "Cannot use CSV: ".Text::CSV->error_diag ();
+open my $fh, "<:encoding(utf8)", "$CON_FILE" or die "$CON_FILE: $!";
+$csv->getline( $fh ); # consume headers
+while ( my $row = $csv->getline( $fh ) ) {
+	push @urls, $row->[6] if $row->[6] ne "";
+}
+$csv->eof or $csv->error_diag();
+close $fh;
+
+$csv = Text::CSV->new ( { binary => 1 } )  # should set binary attribute.
+        or die "Cannot use CSV: ".Text::CSV->error_diag ();
+open $fh, "<:encoding(utf8)", "$UNI_FILE" or die "$CON_FILE: $!";
+$csv->getline( $fh ); # consume headers
+while ( my $row = $csv->getline( $fh ) ) {
+	push @urls, $row->[4] if $row->[4] ne "";
+}
+$csv->eof or $csv->error_diag();
+close $fh;
+
+`mkdir -p $OUT_DIR`;
+
+`rm $OUT_DIR/*`;
+
+foreach my $url ( @urls )
+{
+	$url =~ m/([^\/]+)$/;
+	my $dburl = "http://dbpedia.org/data/$1.ntriples";
+	print $dburl."\n";
+	`curl -s $dburl > $OUT_DIR/$1.nt`;
+}
+

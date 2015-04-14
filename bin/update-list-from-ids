@@ -6,4 +6,4 @@ echo $BASE_DIR
 
 $BASE_DIR/tools/Grinder/bin/explode_worksheets $BASE_DIR/source-data/UKRLPdata.xls 
 
-$BASE_DIR/bin/pick_rows_from_big_list
+$BASE_DIR/bin/pick-rows-from-big-list

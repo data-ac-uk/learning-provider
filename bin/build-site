@@ -1,8 +1,10 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl -I/home/dataacuk/data.ac.uk/learning-provider/tools/Grinder/perl_lib/
 
 use FindBin;
 use Text::CSV;
 use Data::Dumper;
+use Excel::Writer::XLSX;
+
 
 use strict;
 use warnings;
@@ -17,6 +19,7 @@ my $groups_data_path = "$FindBin::Bin/../htdocs/group";
 # Load Data
 ############################################################
 
+my $hesa_ukprn_data = load_csv_file( "$var_path/downloads/hesa-ukprn.csv", "UKPRN" );
 my $groups_data = load_csv_file( "$var_path/downloads/groups.csv", "ID" );
 my $groups_map_data = load_csv_file( "$var_path/downloads/groups-map.csv","UKPRN" );
 my $ukprn_data = load_csv_file( "$source_data_path/ukprn.csv", "UKPRN" );
@@ -36,6 +39,12 @@ foreach my $ukprn ( keys %$ukprn_data )
 		$ukprn_data->{$ukprn}->{NORTHING} = $pcdata->{NORTHING};
 	}
 }
+foreach my $ukprn ( keys %$hesa_ukprn_data )
+{
+	next if( !defined $ukprn_data->{$ukprn} ); # skip ones which no longer exist
+	$ukprn_data->{$ukprn}->{HESA_ID} = $hesa_ukprn_data->{$ukprn}->{"Hesa #"};
+}
+
 foreach my $ukprn ( keys %$groups_map_data )
 {
 	next if( !defined $ukprn_data->{$ukprn} ); # skip ones which no longer exist
@@ -113,6 +122,7 @@ my $lp_plus_fields = [qw/
             EASTING
             NORTHING
             GTR_ID
+            HESA_ID
 	/];
 # learning-provider tsv & csv (cooked)
 output_tabular_files( 
@@ -344,10 +354,35 @@ sub output_tabular_files
 		die "Failed to write file '$file.tsv': $!";
 	open( $fh_csv, ">:utf8", $file.".csv" ) ||
 		die "Failed to write file '$file.csv': $!";
+	my $workbook  = Excel::Writer::XLSX->new( $file.'.xlsx' );
+	my $worksheet = $workbook->add_worksheet();
+        $worksheet->set_column( 1, 1, 40 );    # Column  B   width set to 40
+	my $fmt_hesa = $workbook->add_format(num_format=>'0000');
+	my $fmt_heading = $workbook->add_format(
+		color=>'white',bg_color=>'blue','bold'=>1
+	);
+
+
+	#headings
 	print $fh_tsv join( "\t", @$fields )."\n";
 	print $fh_csv "\"".join( "\",\"", @$fields )."\"\n";
+	for(my $colid=0;$colid<scalar @$fields;$colid++)
+	{
+		$worksheet->write(0,$colid,$fields->[$colid],$fmt_heading);
+	}
+
+	my $rowid=0;
 	foreach my $row ( values %$data )
 	{
+		$rowid++;
+
+		for(my $colid=0;$colid<scalar @$fields;$colid++)
+		{
+			my $fmt;
+			$fmt=$fmt_hesa if( $fields->[$colid] eq "HESA_ID" );
+			$worksheet->write($rowid,$colid,$row->{$fields->[$colid]}, $fmt);
+		}
+
 		my @output_tsv;
 		my @output_csv;
 		foreach my $field ( @$fields )
@@ -493,6 +528,11 @@ sub learning_provider_plus_ttl
 	{
 		$ttl.='
 	skos:notation "'.$lp->{GTR_ID}.'"^^<http://id.learning-provider.data.ac.uk/ns/GTRIdSchemeDatatype> ;';
+	}
+	if( $lp->{HESA_ID} )
+	{
+		$ttl.='
+	skos:notation "'.$lp->{HESA_ID}.'"^^<http://id.learning-provider.data.ac.uk/ns/HESAIdSchemeDatatype> ;';
 	}
 	if( defined $lp->{WIKIPEDIA_URL} )
 	{

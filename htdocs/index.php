@@ -83,6 +83,11 @@ $f3->route('GET /ukprn/@file',
 				$gtr = "$notation";
 				$content .= "<p><strong><abbr title='Gateway to Research'>GTR</abbr> ID:</strong> <a href='http://gtr.rcuk.ac.uk/organisation/$notation'>$notation</a></p>\n";
 			}
+			if( $notation->datatype() == "http://id.learning-provider.data.ac.uk/ns/HESAIdSchemeDatatype" )
+			{
+				$gtr = "$notation";
+				$content .= "<p><strong><abbr title='Higher Education Statistics Agency'>HESA</abbr> ID:</strong> $notation</p>\n";
+			}
 		}
 		$content .= "<p><strong>Homepage:</strong> ".$lp->get( "foaf:homepage" )->link()."</p>\n";
 
@@ -292,6 +297,12 @@ $f3->route( "GET /terms",
 			->add( "rdfs:label", "Institutional Group", "literal" )
 			->add( "rdfs:comment", "An organisation where some or all of the members are academic institutions.", "literal" )
 		;
+		$graph->resource( "lprov:GTRIdSchemeDatatype" )
+			->add( "rdf:type", "rdfs:Datatype" )
+			->add( "rdfs:label", "Gateway to Research Organisation ID", "literal" );
+		$graph->resource( "lprov:HESAIdSchemeDatatype" )
+			->add( "rdf:type", "rdfs:Datatype" )
+			->add( "rdfs:label", "HESA Organisation ID", "literal" );
 		header( "Content-type: text/turtle" );
 		print $graph->serialize( "Turtle" );
 	}

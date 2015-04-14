@@ -23,7 +23,6 @@ while( my $line = readline( $ids_fh ) )
 	$ids->{$line} = $comment;
 }
 close( $ids_fh );
-
 $ids->{UKPRN} = 1; # so we keep the column headers row
 my @lines = ();
 

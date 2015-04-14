@@ -2,63 +2,44 @@
 <div class='ten columns'>
 <h2>Data Download</h2>
 
-<h3>Comma-Separated Values (CSV)</h3>
-<p>.csv: Tabular data. This format should load straight into Excel or other spreadsheets.</p>
+<h3>Tabular Data</h3>
 
 <table>
 
 <tr>
- <td style='width:40px'><a href='/data/learning-providers-plus.csv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/learning-providers-plus.csv'>Learning Providers (augmented)</a></strong> - 20K
-<br />
-This CSV document only the data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>, but has been augmented by additional (non-authoritative) data created by the webmaster of this site; such as wikipedia page and what groups and consorita they are members of.
+ <td style='width:40px'><img src='/resources/images/file.png' /></td>
+ <td><strong>Learning Providers (augmented)
+[<a href='/data/learning-providers-plus.csv'>CSV</a>]
+[<a href='/data/learning-providers-plus.tsv'>TSV</a>]
+[<a href='/data/learning-providers-plus.xlsx'>Excel</a>]
+</strong><br />
+This document contains not only the data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>, but has been augmented by additional (non-authoritative) data created by the webmaster of this site; such as wikipedia page and what groups and consorita they are members of.
 </td>
 </tr>
 
 <tr>
- <td><a href='/data/learning-providers.csv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/learning-providers.csv'>Learning Providers (basic)</a></strong> - 17K
-<br />
-This CSV document only contains data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>. It should be considered as being from an authoritative source.
+ <td style='width:40px'><img src='/resources/images/file.png' /></td>
+ <td><strong>Learning Providers (basic)
+[<a href='/data/learning-providers.csv'>CSV</a>]
+[<a href='/data/learning-providers.tsv'>TSV</a>]
+[<a href='/data/learning-providers.xlsx'>Excel</a>]
+</strong><br />
+This document only contains data supplied from <a href="http://www.ukrlp.co.uk/">http://www.ukrlp.co.uk/</a>. It should be considered as being from an authoritative source.
 </td>
 </tr>
 
 <tr>
- <td><a href='/data/groups.csv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/groups.csv'>Groups</a></strong> - 1K
-<br />
+ <td style='width:40px'><img src='/resources/images/file.png' /></td>
+ <td><strong>Groups
+[<a href='/data/groups.csv'>CSV</a>]
+[<a href='/data/groups.tsv'>TSV</a>]
+[<a href='/data/groups.xlsx'>Excel</a>]
+</strong><br />
 List of groups and consortia (eg. Russell Group). Does not contain membership information (get can get that from the augmented learning-providers download)
 </td>
 </tr>
 
 </table>
-
-<h3>Tab separated values (TSV)</h3>
-<p>.tsv: Tabular data. This is more easy for software to consume. One record per line, and tab characters separate each value. Othewise it is identical to the CSV data.</p>
-<table>
-
-<tr>
- <td style='width:40px'><a href='/data/learning-providers-plus.tsv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/learning-providers-plus.tsv'>Learning Providers (augmented)</a></strong> - 20K
-</td>
-</tr>
-
-<tr>
- <td><a href='/data/learning-providers.tsv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/learning-providers.tsv'>Learning Providers (basic)</a></strong> - 17K
-</td>
-</tr>
-
-<tr>
- <td><a href='/data/groups.tsv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='/data/groups.tsv'>Groups</a></strong> - 1K
-</td>
-</tr>
-
-</table>
-
-
-
 
 
 
@@ -90,6 +71,14 @@ RDF Descriptions of groups and consortia (eg. Russell Group), including name and
 </tr>
 
 <tr>
+ <td style='width:40px;'><a href='data/gtr-linkset.ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='data/gtr-linkset.ttl'>Linkset to "Gateway to Research" URIs</a></strong> - 22K
+<br />
+RDF Turtle containing just a list of owl:sameAs startments connection the URIs for learning providers to the <a href='http://gtr.rcuk.ac.uk/'>Gateway to Research</a> URI for that organsation, where available.
+</td>
+</tr>
+ 
+<tr>
  <td style='width:40px;'><a href='data/dbpedia-linkset.ttl'><img src='/resources/images/file.png' /></a></td>
  <td><strong><a href='data/dbpedia-linkset.ttl'>Linkset to DBPedia</a></strong> - 22K
 <br />
@@ -98,13 +87,14 @@ RDF Turtle containing just a list of owl:sameAs startments connection the URIs f
 </tr>
 
 <tr>
- <td style='width:40px;'><a href='data/gtr-linkset.ttl'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='data/gtr-linkset.ttl'>Linkset to "Gateway to Research" URIs</a></strong> - 22K
+ <td style='width:40px;'><a href='data/dbpedia.ttl'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='data/dbpedia.ttl'>DBPedia Data for UK Institutions and Consortia</a></strong> - 18185 Triples - 3.2Mb
 <br />
-RDF Turtle containing just a list of owl:sameAs startments connection the URIs for learning providers to the <a href='http://gtr.rcuk.ac.uk/'>Gateway to Research</a> URI for that organsation, where available.
+RDF Turtle containing the <a href='http://dbpedia.org'>DBPedia</a> triples for the consortia and institutions. This could be downloaded direct from DBPedia but this document combining the 177 relevant documents is provided for convenience.
 </td>
 </tr>
- 
+
+
 </table>
 </div>
 
@@ -137,6 +127,8 @@ RDF Turtle containing just a list of owl:sameAs startments connection the URIs f
 <p>We are still waiting for final confirmation of the license for the data from UKRLP.</p>
 <p>The data on consortium/groups and linkset to <a href='http://dbpedia.org/'>DBPedia</a> and <a href='http://gtr.rcuk.ac.uk/'>Gateway to Research</a> are <a href='http://creativecommons.org/publicdomain/zero/1.0/'>CC0</a>, you may use them for any purpose (but a credit is still nice, if possible).</p>
 <p>The data on the locations of postcodes is taken from <a href="http://data.ordnancesurvey.co.uk/">http://data.ordnancesurvey.co.uk/</a> and is subject to their license.</p>
+<p>Data from DBPedia was extracted from <a href="http://en.wikipedia.org/>Wikipedia</a> and is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
+<p>The mapping from UKPRN to HESA IDs is taken from the <a href='https://www.hesa.ac.uk/index.php?option=com_heicontacts&Itemid=87'>HESA Website</a>, but no formal license is specified.</p>
 
 <h3>Corrections</h3>
 

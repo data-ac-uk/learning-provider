@@ -1,0 +1,4 @@
+#!
+cd /home/dataacuk/data.ac.uk/learning-provider
+
+tools/Grinder/bin/table_scrape 'https://www.hesa.ac.uk/index.php?option=com_heicontacts&Itemid=87' --table 1 --dehtml > var/downloads/hesa-ukprn.csv

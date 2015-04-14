@@ -12,9 +12,9 @@ $source_data_path = "source-data";
 $postcodes = array();
 if (($handle = fopen("$source_data_path/ukprn.csv", "r")) !== FALSE) {
     while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-	if( $data[8] != "POSTCODE" )
+	if( $data[9] != "POSTCODE" )
 	{
-		$postcodes[preg_replace( '/\s/','',$data[8])] = true;
+		$postcodes[preg_replace( '/\s/','',$data[9])] = true;
 	}
     }
     fclose($handle);

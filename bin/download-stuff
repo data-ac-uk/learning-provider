@@ -1,4 +1,21 @@
-cd /home/dataacuk/data.ac.uk/learning-provider
+#!/usr/bin/php 
+<?php
 
-curl 'https://docs.google.com/spreadsheet/pub?key=0AqodCQwjuWZXdHdHRjhLV2p3eGk0N0JvbmtnR3pTc2c&single=true&gid=0&output=csv' > var/downloads/groups-map.csv
-curl 'https://docs.google.com/spreadsheet/pub?key=0AqodCQwjuWZXdHdHRjhLV2p3eGk0N0JvbmtnR3pTc2c&single=true&gid=1&output=csv' > var/downloads/groups.csv
+chdir(dirname(__DIR__));
+
+//curl 'https://docs.google.com/spreadsheet/pub?key=0AqodCQwjuWZXdHdHRjhLV2p3eGk0N0JvbmtnR3pTc2c&single=true&gid=0&output=csv' > var/downloads/groups-map.csv
+//curl 'https://docs.google.com/spreadsheet/pub?key=0AqodCQwjuWZXdHdHRjhLV2p3eGk0N0JvbmtnR3pTc2c&single=true&gid=1&output=csv' > var/downloads/groups.csv
+$dockey = '1hwsvLLkYBy_u5lWQXaaZRdxUEbV1XNBOHxX_b0-TXro';
+$download['groups.csv'] = "https://docs.google.com/spreadsheets/d/{$dockey}/export?format=csv&gid=1";
+$download['groups-map.csv'] = "https://docs.google.com/spreadsheets/d/{$dockey}/export?format=csv&gid=0";
+
+//
+//$dockey = '0AqodCQwjuWZXdHdHRjhLV2p3eGk0N0JvbmtnR3pTc2c';
+//$download['groups.csv'] = "https://docs.google.com/spreadsheet/pub?key=0AqodCQwjuWZXdHdHRjhLV2p3eGk0N0JvbmtnR3pTc2c&single=true&gid=1&output=csv";
+//$download['groups-map.csv'] = "https://docs.google.com/spreadsheet/pub?key=0AqodCQwjuWZXdHdHRjhLV2p3eGk0N0JvbmtnR3pTc2c&single=true&gid=0&output=csv";
+
+
+foreach($download as $dk=>$dv){
+	echo $dv."\n";
+	copy($dv,"var/downloads/{$dk}");
+}

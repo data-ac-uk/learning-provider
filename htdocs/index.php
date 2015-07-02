@@ -21,10 +21,14 @@ $f3->set('UI','ui/');
 
 $f3->route('GET /',
 	function() {
-		$content = file_get_contents( "homepage-1.html.fragment" )
-			 . file_get_contents( "data/learning-providers-lookup.html.fragment" )
-			 . file_get_contents( "homepage-2.html.fragment" );
-		print render_page( "UK Learning Providers", $content );
+		//$content = file_get_contents( "homepage-1.html.fragment" )
+		//	 . file_get_contents( "data/learning-providers-lookup.html.fragment" )
+		//	 . file_get_contents( "homepage-2.html.fragment" );
+		//print render_page( "UK Learning Providers", $content );
+		
+        $f3=Base::instance();
+		$content =  Template::instance()->render( "../homepage.html" );
+		echo render_page( "UK Learning Providers", $content );
 	}
 );
 
@@ -313,9 +317,13 @@ exit;
 
 function render_page( $title, $content )
 {
-	$page = file_get_contents( "template.html" );
-	$page = preg_replace( "/\\\$CONTENT/", $content, $page );
-	$page = preg_replace( "/\\\$TITLE/", $title, $page );
-	return $page;
+	
+	
+        $f3=Base::instance();
+
+		$f3->set('html_title', $title );
+		$f3->set('content',$content);
+		return Template::instance()->render( "template.html" );
+
 }
 

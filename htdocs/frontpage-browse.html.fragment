@@ -1,0 +1,22 @@
+<h3>Browse</h3>
+
+<ul class='bullets'>
+  <li style='margin-bottom:1em'><a href="/all.html">Full list of UK Universities</a></li>
+  <li>Current<ul>
+    <li><a href="/group/ABSA.html">Aberystwyth Bangor Strategic Alliance</a></li>
+    <li><a href="/group/Cathedrals_Group.html">Cathedrals Group (CCUC)</a></li>
+    <li><a href="/group/GW4.html">GW4</a></li>
+    <li><a href="/group/M5_Universities.html">M5 Universities</a></li>
+    <li><a href="/group/Million_Plus.html">Million+</a></li>
+    <li><a href="/group/N8_Research_Partnership.html">N8 Research Partnership</a></li>
+    <li><a href="/group/NCUK.html">NCUK</a></li>
+    <li><a href="/group/Oxbridge.html">Oxbridge</a></li>
+    <li><a href="/group/Russell_Group.html">Russell Group</a></li>
+    <li><a href="/group/Science_and_Engineering_South.html">Science and Engineering South (SES)</a></li>
+    <li><a href="/group/University_Alliance.html">University Alliance</a></li>
+    <li><a href="/group/White_Rose_University_Consortium.html">White Rose University Consortium</a></li>
+  </ul></li>
+  <li>Ended<ul>
+    <li><a href="/group/1994_Group.html">1994 Group</a></li>
+  </ul></li>
+</ul>

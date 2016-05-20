@@ -49,6 +49,8 @@ foreach my $ukprn ( keys %$groups_map_data )
 {
 	next if( !defined $ukprn_data->{$ukprn} ); # skip ones which no longer exist
 
+	$ukprn_data->{$ukprn}->{VIEW_NAME} = $groups_map_data->{$ukprn}->{VIEW_NAME};
+	$ukprn_data->{$ukprn}->{SORT_NAME} = $groups_map_data->{$ukprn}->{SORT_NAME};
 	my $wikipedia = $groups_map_data->{$ukprn}->{Wikipedia};
 	$ukprn_data->{$ukprn}->{WIKIPEDIA_URL} = $wikipedia;
 	if( defined $wikipedia )
@@ -92,37 +94,39 @@ output_tabular_files(
 	$data_path."/learning-providers",
 	$ukprn_data,
 	[qw/
-            UKPRN
-            PROVIDER_NAME
-            ALIAS
-            FLAT_NAME_NUMBER
-            BUILDING_NAME_NUMBER
-            LOCALITY
-            STREET_NAME
-            TOWN
-            POSTCODE
-            WEBSITE_ADDRESS
+	    UKPRN
+	    PROVIDER_NAME
+	    ALIAS
+	    FLAT_NAME_NUMBER
+	    BUILDING_NAME_NUMBER
+	    LOCALITY
+	    STREET_NAME
+	    TOWN
+	    POSTCODE
+	    WEBSITE_ADDRESS
 	/] );
 
 my $lp_plus_fields = [qw/
-            UKPRN
-            PROVIDER_NAME
-            ALIAS
-            FLAT_NAME_NUMBER
-            BUILDING_NAME_NUMBER
-            LOCALITY
-            STREET_NAME
-            TOWN
-            POSTCODE
-            WEBSITE_URL
-            WIKIPEDIA_URL
-            GROUPS
-            LONGITUDE
-            LATITUDE
-            EASTING
-            NORTHING
-            GTR_ID
-            HESA_ID
+	    UKPRN
+	    PROVIDER_NAME
+	    VIEW_NAME
+	    SORT_NAME
+	    ALIAS
+	    FLAT_NAME_NUMBER
+	    BUILDING_NAME_NUMBER
+	    LOCALITY
+	    STREET_NAME
+	    TOWN
+	    POSTCODE
+	    WEBSITE_URL
+	    WIKIPEDIA_URL
+	    GROUPS
+	    LONGITUDE
+	    LATITUDE
+	    EASTING
+	    NORTHING
+	    GTR_ID
+	    HESA_ID
 	/];
 # learning-provider tsv & csv (cooked)
 output_tabular_files( 
@@ -164,10 +168,10 @@ output_tabular_files (
 	$groups_data,
 	[
 	    "ID",
-            "Group Name",
-            "Homepage",
-            "Wikipedia",
-            "Members List"
+	    "Group Name",
+	    "Homepage",
+	    "Wikipedia",
+	    "Members List"
 	] );
 
 
@@ -275,11 +279,11 @@ output_tabular_files (
 		if( !defined $lp->{PROVIDER_NAME} ) { print Dumper( $lp ); exit; }
 	}
 	print $fh "<div style='margin-top:1em;width:99\%' id='filterList'>\n";
-	foreach my $lp ( sort { $a->{PROVIDER_NAME} cmp $b->{PROVIDER_NAME} } values %$ukprn_data )
+	foreach my $lp ( sort { $a->{SORT_NAME} cmp $b->{SORT_NAME} } values %$ukprn_data )
 	{
 		print $fh '<div id="ukprn-'.$lp->{UKPRN}.'" style="display:none">';
 		print $fh '<div style="float:left;padding-right:1em"><a href="/ukprn/'.$lp->{UKPRN}.'.html">'.$lp->{UKPRN}.'</a></div>';
-		print $fh '<div style="float:left;width:50%"><a href="/ukprn/'.$lp->{UKPRN}.'.html">'.$lp->{PROVIDER_NAME}.'</a></div>';
+		print $fh '<div style="float:left;width:50%"><a href="/ukprn/'.$lp->{UKPRN}.'.html">'.$lp->{VIEW_NAME}.'</a></div>';
 		print $fh '<div stlye="width:30%"><a href="'.$lp->{WEBSITE_URL}.'">'.$lp->{WEBSITE_URL}.'</a></div>';
 		print $fh '</div>
 ';
@@ -288,10 +292,10 @@ output_tabular_files (
 
 	print $fh "<script type='text/javascript' src='/resources/filter.js'></script>\n";
 	my @list = ();
-	foreach my $lp ( sort { $a->{PROVIDER_NAME} cmp $b->{PROVIDER_NAME} } values %$ukprn_data )
+	foreach my $lp ( sort { $a->{SORT_NAME} cmp $b->{SORT_NAME} } values %$ukprn_data )
 	{
 		my $id = "ukprn-".$lp->{UKPRN};
-		my $text = lc ($lp->{PROVIDER_NAME}." ".$lp->{UKPRN}." ".$lp->{WEBSITE_ADDRESS});
+		my $text = lc ($lp->{VIEW_NAME}." ".$lp->{UKPRN}." ".$lp->{WEBSITE_ADDRESS});
 		$text =~ s/[^a-z0-9]/ /g;
 		push @list, "'$id': '$text'";
 	}
@@ -319,16 +323,16 @@ sub load_csv_file
 {
 	my( $filename, $key_field ) = @_;
 
-        my $data;
-        my $csv = Text::CSV->new ( { binary => 1 } )  # should set binary attribute.
-                        or die "Cannot use CSV: ".Text::CSV->error_diag ();
+	my $data;
+	my $csv = Text::CSV->new ( { binary => 1 } )  # should set binary attribute.
+			or die "Cannot use CSV: ".Text::CSV->error_diag ();
 
-        open my $fh, "<:encoding(utf8)", "$filename" or die "$filename: $!";
-        my $fields = $csv->getline( $fh );
+	open my $fh, "<:encoding(utf8)", "$filename" or die "$filename: $!";
+	my $fields = $csv->getline( $fh );
 	#my $fields = [];
 	#foreach ( @$fields_line ) { push @$fields, uc $_; }
 	my $number_of_fields = scalar @$fields;
-        while ( my $row = $csv->getline( $fh ) ) {
+	while ( my $row = $csv->getline( $fh ) ) {
 		my $row_data = {};
 		for my $i (0..($number_of_fields-1) )
 		{
@@ -338,8 +342,8 @@ sub load_csv_file
 		}
 		$data->{ $row_data->{$key_field} } = $row_data;
 	}
-        $csv->eof or $csv->error_diag();
-        close $fh;
+	$csv->eof or $csv->error_diag();
+	close $fh;
 
 	return $data;
 }
@@ -356,7 +360,7 @@ sub output_tabular_files
 		die "Failed to write file '$file.csv': $!";
 	my $workbook  = Excel::Writer::XLSX->new( $file.'.xlsx' );
 	my $worksheet = $workbook->add_worksheet();
-        $worksheet->set_column( 1, 1, 40 );    # Column  B   width set to 40
+	$worksheet->set_column( 1, 1, 40 );    # Column  B   width set to 40
 	my $fmt_hesa = $workbook->add_format(num_format=>'0000');
 	my $fmt_heading = $workbook->add_format(
 		color=>'white',bg_color=>'blue','bold'=>1
@@ -408,6 +412,7 @@ sub group_ttl_headers
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix lprov: <http://id.learning-provider.data.ac.uk/terms#> .
 @prefix aiiso: <http://purl.org/vocab/aiiso/schema#> .
+@prefix vcard:  <http://www.w3.org/2006/vcard/ns#> .
 ';
 }
 
@@ -438,7 +443,6 @@ sub group_ttl
 
 	foreach my $member ( values %{$group->{MEMBERS_HASH}} )
 	{
-	
 		my @same_as = ( $member->{DBPEDIA_URI} );
 		if( $member->{GTR_URI} )
 		{
@@ -447,7 +451,8 @@ sub group_ttl
 		$ttl .= '
 <http://id.learning-provider.data.ac.uk/ukprn/'.$member->{UKPRN}.'>
 	a foaf:Organization , aiiso:Institution , lprov:UKUniversity ;
-	rdfs:label "'.ttl_esc( $member->{"PROVIDER_NAME"} ).'" ;
+	rdfs:label "'.ttl_esc( $member->{"VIEW_NAME"} ).'" ;
+	vcard:sortLabel "'.ttl_esc( $member->{"SORT_NAME"} ).'" ;
 	foaf:homepage <'.$member->{WEBSITE_URL}.'> ; 
 	owl:sameAs <'.join( ">, <", @same_as ).'> .
 ';
@@ -484,10 +489,10 @@ sub learning_provider_ttl
 	my $ttl = '
 <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>
 	a foaf:Organization , aiiso:Institution , lprov:UKUniversity ;
-	rdfs:label "'.ttl_esc( $lp->{"PROVIDER_NAME"} ).'" ;
+	rdfs:label "'.ttl_esc( $lp->{"VIEW_NAME"} ).'" ;
 	skos:notation "'.$lp->{UKPRN}.'"^^<http://id.learning-provider.data.ac.uk/ns/UKPRNSchemeDatatype> ;
-        oo:primaryContact <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#contact> ;
-        ospost:postcode <http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{POSTCODE} ).'> ;
+	oo:primaryContact <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#contact> ;
+	ospost:postcode <http://data.ordnancesurvey.co.uk/id/postcodeunit/'.dewhitespace( $lp->{POSTCODE} ).'> ;
 	vcard:adr <http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'#address> ;
 	foaf:homepage <'.$lp->{WEBSITE_URL}.'> ;
 	rdfs:seeAlso <'.$sameas_org.'> .
@@ -496,8 +501,8 @@ sub learning_provider_ttl
 	a vcard:Address ;
 	vcard:postal-code "'.$lp->{POSTCODE}.'" ;
 	vcard:country-name "United Kingdom" ;
-        vcard:street-address "'.join( ", ", @street ).'" ;
-        vcard:locality "'.join( ", ", @locality ).'" .
+	vcard:street-address "'.join( ", ", @street ).'" ;
+	vcard:locality "'.join( ", ", @locality ).'" .
 ';
 	return $ttl;
 }
@@ -508,7 +513,7 @@ sub learning_provider_plus_ttl_headers
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix spatialrelations: <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/> .
 @prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
-@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 ';
 }
 
@@ -523,7 +528,8 @@ sub learning_provider_plus_ttl
 	}	
 	my $ttl = learning_provider_ttl( $lp, $groups_data );
 	$ttl.='
-<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>';
+<http://id.learning-provider.data.ac.uk/ukprn/'.$lp->{UKPRN}.'>
+	vcard:sortLabel "'.ttl_esc( $lp->{"SORT_NAME"} ).'" ; ';
 	if( $lp->{GTR_ID} )
 	{
 		$ttl.='

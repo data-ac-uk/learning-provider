@@ -11,6 +11,7 @@ $dockey = '14PypMLgUY3u6Gp1KjRtq2hkQwG8abCI-SGQgrwUpeBo';
 
 $download['groups.csv'] = "https://docs.google.com/spreadsheets/d/{$dockey}/export?format=csv&gid=1";
 $download['groups-map.csv'] = "https://docs.google.com/spreadsheets/d/{$dockey}/export?format=csv&gid=0";
+$download['extra-postcodes.csv'] = "https://docs.google.com/spreadsheets/d/{$dockey}/export?format=csv&gid=306392666";
 
 //
 //$dockey = '0AqodCQwjuWZXdHdHRjhLV2p3eGk0N0JvbmtnR3pTc2c';

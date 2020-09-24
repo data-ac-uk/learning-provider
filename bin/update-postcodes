@@ -5,7 +5,7 @@ require_once( "lib/arc2/ARC2.php" );
 require_once( "lib/Graphite/Graphite.php" );
 $postcode_cache = "var/postcodes";
 $source_data_path = "source-data";
-
+$extras_file = "var/downloads/extra-postcodes.csv";
 ############################################################
 # Load Data
 ############################################################
@@ -18,9 +18,25 @@ if (($handle = fopen("$source_data_path/ukprn.csv", "r")) !== FALSE) {
 	}
     }
     fclose($handle);
+}else {
+	print "NO UKPRN LIST\n";
+	exit(1);
+}
+$extras = array();
+if (($handle = fopen($extras_file, "r")) !== FALSE) {
+    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+	if( $data[0] != "Postcode" )
+	{
+		$extras[preg_replace( '/\s/','',$data[0])] = $data[1].",".$data[2];
+	}
+    }
+    fclose($handle);
+}else {
+	print "NO EXTRAS\n";
+	exit(1);
 }
 ############################################################
-# Load Data
+# PREP Data
 ############################################################
 $csv = "POSTCODE,EASTING,NORTHING,LATITUDE,LONGITUDE\n";
 foreach( $postcodes as $postcode=>$dummy )
@@ -46,8 +62,15 @@ foreach( $postcodes as $postcode=>$dummy )
 		}
 		fclose( $fh );
 	}
-	$csv .= file_get_contents( $cache );
+	$row = file_get_contents( $cache );
+	if( empty( $row ) && @$extras[$postcode] ) {
+		$row = "$postcode,,,".$extras[$postcode]."\n";
+	}
+	$csv .= $row;
 }
+############################################################
+# Write Data
+############################################################
 $fh = fopen($postcode_cache."/postcodes.csv", 'w') or die("can't open file: $postcode_cache/postcodes.csv");
 fwrite($fh, $csv );
 fclose($fh);
